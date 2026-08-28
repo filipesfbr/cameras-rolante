@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Câmeras Rolante</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #111;
+    color: #eee;
+  }
+  header {
+    padding: 12px 20px;
+    background: #1c1c1c;
+    border-bottom: 2px solid #333;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  header h1 { margin: 0; font-size: 17px; }
+  header .sub { font-size: 12px; color: #999; margin-top: 3px; }
+  #clock {
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    font-family: 'Consolas', 'Courier New', monospace;
+    background: #242424;
+    border: 1px solid #3a3a3a;
+    padding: 6px 14px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+  }
+  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  button {
+    background: #2a6fd6;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  button:hover { background: #1e5cb8; }
+  button.secondary { background: #3a3a3a; }
+  button.secondary:hover { background: #4a4a4a; }
+  button:disabled { background: #555; cursor: not-allowed; opacity: .7; }
+
+  .cams {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 16px;
+  }
+  .cam {
+    position: relative;
+    flex: 1 1 45%;
+    min-width: 320px;
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #2c2c2c;
+  }
+  .cam video { width: 100%; display: block; background: #000; }
+  .cam .label {
+    padding: 8px 12px;
+    font-size: 13px;
+    background: #242424;
+    border-top: 1px solid #2c2c2c;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .badge { font-size: 11px; color: #7fc97f; }
+  .badge.off { color: #e07a7a; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Rolante - Câmeras</h1>
+    <div class="sub">Streams HLS do portal Solutti · hls.js local</div>
+  </div>
+  <div class="controls">
+    <span id="clock">--/--/---- --:--:--</span>
+  </div>
+</header>
+
+<div class="cams">
+  <div class="cam">
+    <video id="cam1" muted playsinline autoplay></video>
+    <div class="label">
+      <span>Rio Areia — <strong>rioareia</strong></span>
+      <span class="badge" data-status="cam1">carregando…</span>
+      <button data-shot="cam1">Capturar</button>
+    </div>
+  </div>
+  <div class="cam">
+    <video id="cam2" muted playsinline autoplay></video>
+    <div class="label">
+      <span>Rio Areia — <strong>ponte mata olho</strong></span>
+      <span class="badge" data-status="cam2">carregando…</span>
+      <button data-shot="cam2">Capturar</button>
+    </div>
+  </div>
+</div>
+
+<script src="hls.min.js"></script>
+<script>
+  const STREAMS = {
+    cam1: 'https://rolante.solutti.net/rioareia/video1_stream.m3u8',
+    cam2: 'https://rolante.solutti.net/pontemataolho/video1_stream.m3u8'
+  };
+  const MAX_WIDTH = 1280;   // largura máxima do arquivo salvo (reduz o tamanho)
+  const JPEG_QUALITY = 0.82;
+  let hlsInstances = {};
+
+  function setStatus(id, text, ok) {
+    const el = document.querySelector('[data-status="' + id + '"]');
+    if (el) { el.textContent = text; el.className = 'badge' + (ok ? '' : ' off'); }
+  }
+
+  function load(id) {
+    const video = document.getElementById(id);
+    const url = STREAMS[id];
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hlsInstances[id] = hls;
+      hls.on(Hls.Events.MEDIA_ATTACHED, () => setStatus(id, 'conectando…', true));
+      hls.on(Hls.Events.ERROR, (evt, data) => {
+        if (data.fatal) {
+          setStatus(id, 'queda — reconectando', false);
+          hls.destroy();
+          setTimeout(() => load(id), 3000);
+        }
+      });
+      hls.loadSource(url);
+      hls.attachMedia(video);
+      video.addEventListener('playing', () => setStatus(id, 'AO VIVO', true));
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = url;
+      video.addEventListener('playing', () => setStatus(id, 'AO VIVO', true));
+    } else {
+      setStatus(id, 'navegador sem suporte a HLS', false);
+    }
+  }
+
+  /* ---- relógio local (data/hora no formato dd/mm/aaaa - hh:mm:ss) ---- */
+  function updClock() {
+    const d = new Date();
+    const p = n => String(n).padStart(2, '0');
+    document.getElementById('clock').textContent =
+      p(d.getDate()) + '/' + p(d.getMonth()+1) + '/' + d.getFullYear() +
+      ' - ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  setInterval(updClock, 1000);
+  updClock();
+
+  /* ---- carimbo de data/hora p/ nome do arquivo ---- */
+  function fileStamp() {
+    const d = new Date();
+    const p = n => String(n).padStart(2, '0');
+    return d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) +
+           '_' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+  }
+
+  /* ---- captura de screenshot com download automático ---- */
+  function snapShot(id) {
+    const v = document.getElementById(id);
+    const btn = document.querySelector('[data-shot="' + id + '"]');
+    if (!v || v.readyState < 2) { setStatus(id, 'sem frame ainda', false); return; }
+    const w = v.videoWidth, h = v.videoHeight;
+    let cw = w, ch = h;
+    if (w > MAX_WIDTH) { ch = Math.round(h * MAX_WIDTH / w); cw = MAX_WIDTH; }
+    const c = document.createElement('canvas');
+    c.width = cw; c.height = ch;
+    c.getContext('2d').drawImage(v, 0, 0, cw, ch);
+    const a = document.createElement('a');
+    a.download = 'rioareia_' + id + '_' + fileStamp() + '.jpg';
+    a.href = c.toDataURL('image/jpeg', JPEG_QUALITY);
+    a.click();
+  }
+  document.querySelectorAll('[data-shot]').forEach(b =>
+    b.addEventListener('click', () => snapShot(b.dataset.shot))
+  );
+
+  load('cam1');
+  load('cam2');
+</script>
+</body>
+</html>
