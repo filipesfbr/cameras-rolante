@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Câmeras Rolante</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%232a6fd6' d='M17 10.5V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-3.5l4 3.5V7l-4 3.5z'/%3E%3C/svg%3E">
 <style>
   * { box-sizing: border-box; }
   body {
@@ -26,9 +27,9 @@
   header .sub { font-size: 12px; color: #999; margin-top: 3px; }
   #clock {
     font-size: 22px;
-    font-weight: 600;
+    font-weight: 400;
     color: #fff;
-    font-family: 'Consolas', 'Courier New', monospace;
+    font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
     background: #242424;
     border: 1px solid #3a3a3a;
     padding: 6px 14px;
@@ -49,6 +50,7 @@
   button.secondary { background: #3a3a3a; }
   button.secondary:hover { background: #4a4a4a; }
   button:disabled { background: #555; cursor: not-allowed; opacity: .7; }
+  button svg { display: block; }
 
   .cams {
     display: flex;
@@ -79,6 +81,7 @@
   }
   .badge { font-size: 11px; color: #7fc97f; }
   .badge.off { color: #e07a7a; }
+  .actions { display: inline-flex; gap: 4px; }
 </style>
 </head>
 <body>
@@ -98,7 +101,7 @@
     <div class="label">
       <span>Rio Areia — <strong>Ponte do Grassmann</strong></span>
       <span class="badge" data-status="cam1">carregando…</span>
-      <button data-shot="cam1">Capturar</button>
+      <span class="actions"><button data-shot="cam1" title="Capturar frame" aria-label="Capturar frame"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 15.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg></button><button class="secondary" data-reload="cam1" title="Recarregar stream" aria-label="Recarregar stream"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 9.998h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></span>
     </div>
   </div>
   <div class="cam">
@@ -106,7 +109,7 @@
     <div class="label">
       <span>Rio Areia — <strong>Ponte Mata Olho</strong></span>
       <span class="badge" data-status="cam2">carregando…</span>
-      <button data-shot="cam2">Capturar</button>
+      <span class="actions"><button data-shot="cam2" title="Capturar frame" aria-label="Capturar frame"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 15.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg></button><button class="secondary" data-reload="cam2" title="Recarregar stream" aria-label="Recarregar stream"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 9.998h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></span>
     </div>
   </div>
 </div>
@@ -120,10 +123,22 @@
   const MAX_WIDTH = 1280;   // largura máxima do arquivo salvo (reduz o tamanho)
   const JPEG_QUALITY = 0.82;
   let hlsInstances = {};
+  const reconnectTimers = {};
 
   function setStatus(id, text, ok) {
     const el = document.querySelector('[data-status="' + id + '"]');
     if (el) { el.textContent = text; el.className = 'badge' + (ok ? '' : ' off'); }
+  }
+
+  /* recarrega o stream de uma câmera do zero (nova instância HLS) */
+  function reload(id) {
+    const video = document.getElementById(id);
+    if (hlsInstances[id]) { hlsInstances[id].destroy(); delete hlsInstances[id]; }
+    if (reconnectTimers[id]) { clearTimeout(reconnectTimers[id]); delete reconnectTimers[id]; }
+    video.removeAttribute('src');
+    video.load();
+    setStatus(id, 'recarregando…', false);
+    load(id);
   }
 
   function load(id) {
@@ -137,7 +152,8 @@
         if (data.fatal) {
           setStatus(id, 'queda — reconectando', false);
           hls.destroy();
-          setTimeout(() => load(id), 3000);
+          delete hlsInstances[id];
+          reconnectTimers[id] = setTimeout(() => load(id), 3000);
         }
       });
       hls.loadSource(url);
@@ -188,6 +204,9 @@
   }
   document.querySelectorAll('[data-shot]').forEach(b =>
     b.addEventListener('click', () => snapShot(b.dataset.shot))
+  );
+  document.querySelectorAll('[data-reload]').forEach(b =>
+    b.addEventListener('click', () => reload(b.dataset.reload))
   );
 
   load('cam1');
