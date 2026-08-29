@@ -24,7 +24,9 @@
     gap: 10px;
   }
   header h1 { margin: 0; font-size: 17px; }
-  header .sub { font-size: 12px; color: #999; margin-top: 3px; }
+  header .sub { font-size: 14px; color: #999; margin-top: 4px; }
+  header .sub a { color: #79aef5; text-decoration: none; }
+  header .sub a:hover { text-decoration: underline; color: #a4c9fb; }
   #clock {
     font-size: 22px;
     font-weight: 400;
@@ -82,13 +84,40 @@
   .badge { font-size: 11px; color: #7fc97f; }
   .badge.off { color: #e07a7a; }
   .actions { display: inline-flex; gap: 4px; }
+  .label .src {
+    display: inline-flex;
+    align-items: center;
+    color: #79aef5;
+    text-decoration: none;
+    font-size: 11px;
+    gap: 3px;
+    margin-left: 8px;
+  }
+  .label .src:hover { text-decoration: underline; color: #a4c9fb; }
+  .label .src svg { display: block; }
+
+  /* ---- overlay de visualização ampliada ---- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.88);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 1000;
+  }
+  .overlay.open { display: flex; }
+  .overlay .ov-box { position: relative; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; gap: 8px; }
+  .overlay video { max-width: 100%; max-height: 88vh; background: #000; border-radius: 8px; display: block; }
+  .overlay .ov-title { font-size: 13px; color: #ccc; text-align: center; }
 </style>
 </head>
 <body>
 <header>
   <div>
     <h1>Rolante - Câmeras</h1>
-    <div class="sub">Streams HLS do portal Solutti · hls.js local</div>
+    <div class="sub">Links das câmeras obtidos no portal <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">alerta.rolante.ifrs.edu.br</a></div>
   </div>
   <div class="controls">
     <span id="clock">--/--/---- --:--:--</span>
@@ -99,18 +128,25 @@
   <div class="cam">
     <video id="cam1" muted playsinline autoplay></video>
     <div class="label">
-      <span>Rio Areia — <strong>Ponte do Grassmann</strong></span>
+      <span>Rio Areia — <strong>Ponte do Grassmann</strong> <a class="src" href="https://rolante.solutti.net/rioareia/" target="_blank" rel="noopener" title="Fonte: página da câmera no portal Solutti" aria-label="Fonte: página da câmera no portal Solutti"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H7v10h10v-4h2v6H5V5z"/></svg></a></span>
       <span class="badge" data-status="cam1">carregando…</span>
-      <span class="actions"><button data-shot="cam1" title="Capturar frame" aria-label="Capturar frame"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 15.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg></button><button class="secondary" data-reload="cam1" title="Recarregar stream" aria-label="Recarregar stream"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 9.998h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></span>
+      <span class="actions"><button class="secondary" data-reload="cam1" title="Recarregar stream" aria-label="Recarregar stream"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 9.998h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></span>
     </div>
   </div>
   <div class="cam">
     <video id="cam2" muted playsinline autoplay></video>
     <div class="label">
-      <span>Rio Areia — <strong>Ponte Mata Olho</strong></span>
+      <span>Rio Areia — <strong>Ponte Mata Olho</strong> <a class="src" href="https://rolante.solutti.net/pontemataolho/" target="_blank" rel="noopener" title="Fonte: página da câmera no portal Solutti" aria-label="Fonte: página da câmera no portal Solutti"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M14 3h7v7h-2V6.4l-8.3 8.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H7v10h10v-4h2v6H5V5z"/></svg></a></span>
       <span class="badge" data-status="cam2">carregando…</span>
-      <span class="actions"><button data-shot="cam2" title="Capturar frame" aria-label="Capturar frame"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4z"/><path d="M9 3 7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.17L15 3H9zm3 15.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg></button><button class="secondary" data-reload="cam2" title="Recarregar stream" aria-label="Recarregar stream"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 9.998h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></span>
+      <span class="actions"><button class="secondary" data-reload="cam2" title="Recarregar stream" aria-label="Recarregar stream"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17.65 6.35A7.96 7.96 0 0 0 12 4a8 8 0 1 0 7.73 9.998h-2.08A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button></span>
     </div>
+  </div>
+</div>
+
+<div id="overlay" class="overlay" title="Clique fora para fechar">
+  <div class="ov-box">
+    <video id="ovVideo" muted playsinline autoplay></video>
+    <div id="ovTitle" class="ov-title"></div>
   </div>
 </div>
 
@@ -120,14 +156,32 @@
     cam1: 'https://rolante.solutti.net/rioareia/video1_stream.m3u8',
     cam2: 'https://rolante.solutti.net/pontemataolho/video1_stream.m3u8'
   };
-  const MAX_WIDTH = 1280;   // largura máxima do arquivo salvo (reduz o tamanho)
-  const JPEG_QUALITY = 0.82;
   let hlsInstances = {};
   const reconnectTimers = {};
+  const attempts = {};        // tentativas falhas seguidas por câmera
+  const MAX_RECONNECT = 10;   // máx. tentativas antes de marcar FORA DO AR
 
   function setStatus(id, text, ok) {
     const el = document.querySelector('[data-status="' + id + '"]');
     if (el) { el.textContent = text; el.className = 'badge' + (ok ? '' : ' off'); }
+  }
+
+  /* zera o contador quando a câmera volta a tocar */
+  function markLive(id) {
+    attempts[id] = 0;
+    setStatus(id, 'AO VIVO', true);
+  }
+
+  /* registra uma falha; se estourar o máximo, marca FORA DO AR e para. Retorna true se desistiu */
+  function handleFailure(id, label) {
+    attempts[id] = (attempts[id] || 0) + 1;
+    if (attempts[id] >= MAX_RECONNECT) {
+      clearStallWatch(id);
+      setStatus(id, 'FORA DO AR', false);  // para de tentar; botão Recarregar reinicia
+      return true;
+    }
+    setStatus(id, label + ' (' + (MAX_RECONNECT - attempts[id]) + ')', false);
+    return false;
   }
 
   /* recarrega o stream de uma câmera do zero (nova instância HLS) */
@@ -137,6 +191,8 @@
     if (reconnectTimers[id]) { clearTimeout(reconnectTimers[id]); delete reconnectTimers[id]; }
     video.removeAttribute('src');
     video.load();
+    // não zera attempts aqui: só markLive (voltar a tocar) ou o botão manual fazem isso
+    clearStallWatch(id);
     setStatus(id, 'recarregando…', false);
     load(id);
   }
@@ -150,22 +206,50 @@
       hls.on(Hls.Events.MEDIA_ATTACHED, () => setStatus(id, 'conectando…', true));
       hls.on(Hls.Events.ERROR, (evt, data) => {
         if (data.fatal) {
-          setStatus(id, 'queda — reconectando', false);
           hls.destroy();
           delete hlsInstances[id];
-          reconnectTimers[id] = setTimeout(() => load(id), 3000);
+          if (!handleFailure(id, 'queda — reconectando')) {
+            reconnectTimers[id] = setTimeout(() => load(id), 3000);
+          }
         }
       });
       hls.loadSource(url);
       hls.attachMedia(video);
-      video.addEventListener('playing', () => setStatus(id, 'AO VIVO', true));
+      video.addEventListener('playing', () => markLive(id));
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = url;
-      video.addEventListener('playing', () => setStatus(id, 'AO VIVO', true));
+      video.addEventListener('playing', () => markLive(id));
     } else {
       setStatus(id, 'navegador sem suporte a HLS', false);
     }
   }
+
+  /* ---- detecção de stream travado (currentTime não avança) ---- */
+  const lastMove = {};   // lastMove[id] = timestamp do último avanço real
+  function clearStallWatch(id) { delete lastMove[id]; }
+  // roda a cada segundo; marca travado se o vídeo estiver "ao vivo" mas parado por 8s
+  setInterval(() => {
+    document.querySelectorAll('video').forEach(v => {
+      if (!v.id) return;
+      const id = v.id;
+      if (attempts[id] >= MAX_RECONNECT) return;  // já desistiu (FORA DO AR): não reconta
+      if (!v.paused && v.readyState >= 2) {
+        const now = performance.now();
+        if (lastMove[id] === undefined) { lastMove[id] = now; return; }
+        // se o currentTime andou de verdade, atualiza o marco
+        if (v.__lastTime !== undefined && Math.abs(v.currentTime - v.__lastTime) > 0.05) {
+          lastMove[id] = now;
+        }
+        v.__lastTime = v.currentTime;
+        if (now - lastMove[id] > 8000) {
+          lastMove[id] = now;  // evita loop; dispara só uma vez
+          if (!handleFailure(id, 'stream travado — reconectando')) {
+            reload(id);  // reinicia a instância HLS
+          }
+        }
+      }
+    });
+  }, 1000);
 
   /* ---- relógio local (data/hora no formato dd/mm/aaaa - hh:mm:ss) ---- */
   function updClock() {
@@ -178,39 +262,53 @@
   setInterval(updClock, 1000);
   updClock();
 
-  /* ---- carimbo de data/hora p/ nome do arquivo ---- */
-  function fileStamp() {
-    const d = new Date();
-    const p = n => String(n).padStart(2, '0');
-    return d.getFullYear() + p(d.getMonth()+1) + p(d.getDate()) +
-           '_' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
-  }
-
-  /* ---- captura de screenshot com download automático ---- */
-  function snapShot(id) {
-    const v = document.getElementById(id);
-    const btn = document.querySelector('[data-shot="' + id + '"]');
-    if (!v || v.readyState < 2) { setStatus(id, 'sem frame ainda', false); return; }
-    const w = v.videoWidth, h = v.videoHeight;
-    let cw = w, ch = h;
-    if (w > MAX_WIDTH) { ch = Math.round(h * MAX_WIDTH / w); cw = MAX_WIDTH; }
-    const c = document.createElement('canvas');
-    c.width = cw; c.height = ch;
-    c.getContext('2d').drawImage(v, 0, 0, cw, ch);
-    const a = document.createElement('a');
-    a.download = 'rioareia_' + id + '_' + fileStamp() + '.jpg';
-    a.href = c.toDataURL('image/jpeg', JPEG_QUALITY);
-    a.click();
-  }
-  document.querySelectorAll('[data-shot]').forEach(b =>
-    b.addEventListener('click', () => snapShot(b.dataset.shot))
-  );
   document.querySelectorAll('[data-reload]').forEach(b =>
-    b.addEventListener('click', () => reload(b.dataset.reload))
+    b.addEventListener('click', () => {
+      attempts[b.dataset.reload] = 0;          // recarga manual zera o contador
+      clearStallWatch(b.dataset.reload);
+      reload(b.dataset.reload);
+    })
   );
 
   load('cam1');
   load('cam2');
+
+  /* ---- overlay de visualização ampliada ---- */
+  const ov = document.getElementById('overlay');
+  const ovVideo = document.getElementById('ovVideo');
+  const ovTitle = document.getElementById('ovTitle');
+  const TITLES = {
+    cam1: 'Rio Areia — Ponte do Grassmann',
+    cam2: 'Rio Areia — Ponte Mata Olho'
+  };
+  let ovHls = null;           // instância HLS do overlay
+  function openOverlay(id) {
+    if (ov.classList.contains('open')) closeOverlay();  // troca de câmera: fecha a anterior
+    ovTitle.textContent = TITLES[id] || id;
+    ov.classList.add('open');
+    const url = STREAMS[id];
+    if (Hls.isSupported()) {
+      ovHls = new Hls();
+      ovHls.loadSource(url);
+      ovHls.attachMedia(ovVideo);
+    } else if (ovVideo.canPlayType('application/vnd.apple.mpegurl')) {
+      ovVideo.src = url;
+    }
+    ovVideo.play();
+  }
+  function closeOverlay() {
+    if (ovHls) { ovHls.destroy(); ovHls = null; }
+    ovVideo.removeAttribute('src');
+    ovVideo.load();
+    ov.classList.remove('open');
+  }
+  // clique no vídeo da câmera abre maior
+  document.querySelectorAll('.cam video').forEach(v =>
+    v.addEventListener('click', () => openOverlay(v.id))
+  );
+  // clique fora do quadro fecha
+  ov.addEventListener('click', e => { if (e.target === ov) closeOverlay(); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeOverlay(); });
 </script>
 </body>
 </html>
