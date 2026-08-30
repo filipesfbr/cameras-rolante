@@ -9,6 +9,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
+    padding-bottom: 90px;
     font-family: 'Segoe UI', Arial, sans-serif;
     background: #111;
     color: #eee;
@@ -111,6 +112,23 @@
   .overlay .ov-box { position: relative; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; gap: 8px; }
   .overlay video { max-width: 100%; max-height: 88vh; background: #000; border-radius: 8px; display: block; }
   .overlay .ov-title { font-size: 13px; color: #ccc; text-align: center; }
+
+  footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100;
+    padding: 10px 20px;
+    font-size: 12px;
+    color: #888;
+    background: #1c1c1c;
+    border-top: 1px solid #2c2c2c;
+    text-align: center;
+    line-height: 1.6;
+  }
+  footer a { color: #79aef5; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -149,6 +167,13 @@
     <div id="ovTitle" class="ov-title"></div>
   </div>
 </div>
+
+<footer>
+  As imagens são exibidas através do portal
+  <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">alerta.rolante.ifrs.edu.br</a>
+  e das páginas de câmera em <a href="https://rolante.solutti.net/rioareia/" target="_blank" rel="noopener">rolante.solutti.net</a>.
+  Este site não é responsável pelo conteúdo, disponibilidade ou propriedade das câmeras.
+</footer>
 
 <script src="hls.min.js"></script>
 <script>
