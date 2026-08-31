@@ -6,6 +6,11 @@ O projeto apenas exibe as imagens; os links das câmeras são obtidos a partir d
 [alerta.rolante.ifrs.edu.br](https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios),
 e os streams são carregados direto das páginas das câmeras em `rolante.solutti.net`.
 
+## Deploy
+
+Publicado via GitHub Pages:
+https://filipesfbr.github.io/cameras-rolante/
+
 ## Como usar
 
 Abra o `index.html` em um navegador. As câmeras carregam automaticamente em HLS;
