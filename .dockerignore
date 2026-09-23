@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+.env*
+design
+index.html
+hls.min.js
+*.md

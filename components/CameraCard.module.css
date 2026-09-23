@@ -1,0 +1,137 @@
+.card {
+  container-type: inline-size; /* a barra de rótulo se reorganiza pela largura do card, não da tela */
+  background: #000;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  break-inside: avoid; /* em colunas, cada card tem altura própria: abrir o histórico de um não estica o vizinho */
+  margin-bottom: 16px;
+}
+.media {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #000;
+  cursor: pointer;
+}
+/* print do histórico por cima do ao vivo, no mesmo espaço do vídeo */
+.frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+  cursor: zoom-in;
+}
+
+/* nome | status ao vivo | grid de botões */
+.label {
+  padding: 10px 14px;
+  font-size: 13px;
+  background: var(--bg-label);
+  border-top: 1px solid var(--border-soft);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas: 'name status actions';
+  align-items: center;
+  column-gap: 14px;
+  row-gap: 8px;
+}
+@container (max-width: 480px) {
+  .label {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name   actions'
+      'status status';
+  }
+}
+
+.name {
+  grid-area: name;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.nameText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.src {
+  flex-shrink: 0;
+  display: inline-flex;
+  color: var(--muted-2);
+}
+.src:hover {
+  color: var(--link-hover);
+  text-decoration: none;
+}
+
+.badge {
+  grid-area: status;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+.ok {
+  color: var(--ok);
+}
+.bad {
+  color: var(--bad);
+}
+.print {
+  color: var(--accent-text);
+}
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background: currentColor;
+}
+
+.actions {
+  grid-area: actions;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 32px;
+  gap: 8px;
+}
+.iconBtn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid var(--border-btn);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.iconBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.iconBtn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.iconActive {
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  border-color: var(--accent-border);
+}
