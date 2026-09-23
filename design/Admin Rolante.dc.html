@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+  body { margin: 0; }
+  a { color: #79aef5; text-decoration: none; }
+  a:hover { color: #a4c9fb; text-decoration: underline; }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#111;color:#eee;font-family:'Segoe UI', Arial, sans-serif;display:flex;flex-direction:column;">
+  <header style="padding:14px 24px;background:#1c1c1c;border-bottom:2px solid #333;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;">
+    <div>
+      <h1 style="margin:0;font-size:18px;">Rolante — Admin</h1>
+      <div style="font-size:12px;color:#999;margin-top:2px;">Câmeras e histórico</div>
+    </div>
+    <a href="./Cameras Rolante.dc.html" style="font-size:13px;">← ver página pública</a>
+  </header>
+
+  <sc-if value="{{ notAuthed }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div style="background:#1c1c1c;border:1px solid #2c2c2c;border-radius:10px;padding:28px;width:260px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-size:14px;color:#ccc;">Acesso restrito</div>
+        <input type="password" placeholder="senha" value="{{ password }}" onChange="{{ onPasswordChange }}" style="background:#242424;border:1px solid #3a3a3a;border-radius:6px;padding:9px 10px;color:#eee;font-size:13px;" />
+        <button onClick="{{ login }}" style="background:#2a6fd6;color:#fff;border:none;border-radius:6px;padding:9px 12px;font-size:13px;cursor:pointer;">Entrar</button>
+        <div style="font-size:11px;color:#666;">Prévia de design — a validação de senha real será feita pelo backend.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ authed }}" hint-placeholder-val="{{ false }}">
+    <main style="padding:24px;display:flex;flex-direction:column;gap:24px;max-width:900px;width:100%;margin:0 auto;box-sizing:border-box;">
+
+      <div style="background:#1c1c1c;border:1px solid #2c2c2c;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;">
+        <div style="font-size:14px;font-weight:600;color:#eee;">Configurações gerais</div>
+        <div style="display:flex;gap:20px;flex-wrap:wrap;">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:#999;">
+            Intervalo padrão entre prints
+            <select value="{{ globalInterval }}" onChange="{{ onGlobalIntervalChange }}" style="background:#242424;border:1px solid #3a3a3a;border-radius:6px;padding:8px 10px;color:#eee;font-size:13px;">
+              <option value="5">5 minutos</option>
+              <option value="15">15 minutos</option>
+              <option value="30">30 minutos</option>
+              <option value="60">1 hora</option>
+            </select>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:#999;">
+            Imagens no histórico
+            <input type="number" min="4" max="24" value="{{ globalHistoryCount }}" onChange="{{ onGlobalHistoryCountChange }}" style="background:#242424;border:1px solid #3a3a3a;border-radius:6px;padding:8px 10px;color:#eee;font-size:13px;width:100px;box-sizing:border-box;" />
+          </label>
+        </div>
+      </div>
+
+      <div style="background:#1c1c1c;border:1px solid #2c2c2c;border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div style="font-size:14px;font-weight:600;color:#eee;">Câmeras</div>
+          <button onClick="{{ toggleAddForm }}" style="background:#2a6fd6;color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:13px;cursor:pointer;">+ Adicionar câmera</button>
+        </div>
+
+        <sc-if value="{{ showAddForm }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#141414;border:1px solid #2c2c2c;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:10px;">
+            <input placeholder="Nome do ponto (ex: Ponte do Grassmann)" value="{{ newCam.name }}" onChange="{{ onNewNameChange }}" style="background:#242424;border:1px solid #3a3a3a;border-radius:6px;padding:8px 10px;color:#eee;font-size:13px;box-sizing:border-box;" />
+            <input placeholder="Rio / local" value="{{ newCam.location }}" onChange="{{ onNewLocationChange }}" style="background:#242424;border:1px solid #3a3a3a;border-radius:6px;padding:8px 10px;color:#eee;font-size:13px;box-sizing:border-box;" />
+            <input placeholder="URL do stream (m3u8)" value="{{ newCam.streamUrl }}" onChange="{{ onNewStreamChange }}" style="background:#242424;border:1px solid #3a3a3a;border-radius:6px;padding:8px 10px;color:#eee;font-size:13px;box-sizing:border-box;" />
+            <input placeholder="URL da página fonte" value="{{ newCam.sourceUrl }}" onChange="{{ onNewSourceChange }}" style="background:#242424;border:1px solid #3a3a3a;border-radius:6px;padding:8px 10px;color:#eee;font-size:13px;box-sizing:border-box;" />
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ addCamera }}" style="background:#2a6fd6;color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ toggleAddForm }}" style="background:#3a3a3a;color:#fff;border:none;border-radius:6px;padding:8px 12px;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-for list="{{ cameras }}" as="cam" hint-placeholder-count="2">
+          <div style="background:#141414;border:1px solid #2c2c2c;border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:14px;color:#eee;font-weight:600;">{{ cam.location }} — {{ cam.name }}</div>
+                <div style="font-size:11px;color:#777;font-family:'Cascadia Code','Consolas','Courier New',monospace;margin-top:4px;word-break:break-all;">{{ cam.streamUrl }}</div>
+              </div>
+              <button onClick="{{ cam.onRemove }}" style="background:transparent;color:#e07a7a;border:1px solid #3a2424;border-radius:6px;padding:6px 10px;font-size:12px;cursor:pointer;">Remover</button>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button onClick="{{ cam.onToggleActive }}" style="{{ cam.activeStyle }}">{{ cam.activeLabel }}</button>
+              <button onClick="{{ cam.onToggleHistory }}" style="{{ cam.historyStyle }}">{{ cam.historyLabel }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <button onClick="{{ logout }}" style="align-self:flex-start;background:#3a3a3a;color:#ccc;border:none;border-radius:6px;padding:8px 12px;font-size:12px;cursor:pointer;">Sair</button>
+    </main>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    authed: false,
+    password: '',
+    globalInterval: 15,
+    globalHistoryCount: 12,
+    cameras: [
+      { id: 'cam1', name: 'Ponte do Grassmann', location: 'Rio Areia', streamUrl: 'https://rolante.solutti.net/rioareia/video1_stream.m3u8', sourceUrl: 'https://rolante.solutti.net/rioareia/', active: true, historyOn: true },
+      { id: 'cam2', name: 'Ponte Mata Olho', location: 'Rio Areia', streamUrl: 'https://rolante.solutti.net/pontemataolho/video1_stream.m3u8', sourceUrl: 'https://rolante.solutti.net/pontemataolho/', active: true, historyOn: true }
+    ],
+    showAddForm: false,
+    newCam: { name: '', location: '', streamUrl: '', sourceUrl: '' }
+  };
+
+  login() { if (this.state.password.trim()) this.setState({ authed: true }); }
+  logout() { this.setState({ authed: false, password: '' }); }
+  toggleActive(id) { this.setState(s => ({ cameras: s.cameras.map(c => c.id === id ? { ...c, active: !c.active } : c) })); }
+  toggleHistory(id) { this.setState(s => ({ cameras: s.cameras.map(c => c.id === id ? { ...c, historyOn: !c.historyOn } : c) })); }
+  removeCamera(id) { this.setState(s => ({ cameras: s.cameras.filter(c => c.id !== id) })); }
+  updateNewCam(field, value) { this.setState(s => ({ newCam: { ...s.newCam, [field]: value } })); }
+  addCamera() {
+    const { name, location, streamUrl, sourceUrl } = this.state.newCam;
+    if (!name.trim() || !streamUrl.trim()) return;
+    const id = 'cam' + Date.now();
+    this.setState(s => ({
+      cameras: [...s.cameras, { id, name, location, streamUrl, sourceUrl, active: true, historyOn: true }],
+      newCam: { name: '', location: '', streamUrl: '', sourceUrl: '' },
+      showAddForm: false
+    }));
+  }
+
+  renderVals() {
+    const cameras = this.state.cameras.map(cam => ({
+      ...cam,
+      activeLabel: cam.active ? 'Ativa' : 'Inativa',
+      activeStyle: 'font-size:11px;padding:4px 10px;border-radius:12px;cursor:pointer;border:none;background:' + (cam.active ? '#1e3a24' : '#3a2424') + ';color:' + (cam.active ? '#7fc97f' : '#e07a7a') + ';',
+      historyLabel: cam.historyOn ? 'Histórico: ligado' : 'Histórico: desligado',
+      historyStyle: 'font-size:11px;padding:4px 10px;border-radius:12px;cursor:pointer;border:none;background:' + (cam.historyOn ? '#1e3a24' : '#333') + ';color:' + (cam.historyOn ? '#7fc97f' : '#999') + ';',
+      onToggleActive: () => this.toggleActive(cam.id),
+      onToggleHistory: () => this.toggleHistory(cam.id),
+      onRemove: () => this.removeCamera(cam.id)
+    }));
+    return {
+      authed: this.state.authed,
+      notAuthed: !this.state.authed,
+      password: this.state.password,
+      onPasswordChange: (e) => this.setState({ password: e.target.value }),
+      login: () => this.login(),
+      logout: () => this.logout(),
+      cameras,
+      showAddForm: this.state.showAddForm,
+      toggleAddForm: () => this.setState(s => ({ showAddForm: !s.showAddForm })),
+      newCam: this.state.newCam,
+      onNewNameChange: (e) => this.updateNewCam('name', e.target.value),
+      onNewLocationChange: (e) => this.updateNewCam('location', e.target.value),
+      onNewStreamChange: (e) => this.updateNewCam('streamUrl', e.target.value),
+      onNewSourceChange: (e) => this.updateNewCam('sourceUrl', e.target.value),
+      addCamera: () => this.addCamera(),
+      globalInterval: this.state.globalInterval,
+      onGlobalIntervalChange: (e) => this.setState({ globalInterval: Number(e.target.value) }),
+      globalHistoryCount: this.state.globalHistoryCount,
+      onGlobalHistoryCountChange: (e) => this.setState({ globalHistoryCount: Number(e.target.value) })
+    };
+  }
+}
+</script>
+</body>
+</html>
