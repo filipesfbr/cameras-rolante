@@ -37,9 +37,9 @@ npm run build       # output: 'standalone', é o que o Dockerfile roda
 `CI → bump na develop → release por tag → sync main → develop` (`.github/workflows/`). É o padrão do
 repo `filipesfbr/workflow-test`: leia o README dele antes de mexer no fluxo ou simplificar uma guarda.
 
-- Feature: `feat/x` → PR (squash) → `develop`. Release: PR `release: vX.Y.Z` de `develop` → `main` (merge commit). O deploy (Render) sai do push na `develop`, com Auto-Deploy "After CI Checks Pass"; a `main` só marca o release (tag + Release).
+- Feature: `feat/x` → PR (squash) → `develop`. Release: PR `release: vX.Y.Z` de `develop` → `main` (merge commit). O deploy (Render) sai do push na `main` (merge do PR de release), com Auto-Deploy "After CI Checks Pass"; a `develop` é só integração e não faz deploy.
 - O `bump.yml` sobe a versão **na `develop`**, nunca na branch de um PR: o push do bot num PR faz o GitHub travar os checks em "Approve and run". Minor/major: edite o `package.json` num PR ou rode o `bump.yml` com `kind`. Abra o PR de release só depois do bump terminar.
-- O `release.yml` só cria tag e Release e não escreve na `main`. Tag já existente = não faz nada.
+- O `release.yml` só cria tag e Release e **nunca escreve na `main`** (push extra = segundo deploy). Tag já existente = não faz nada.
 - Nunca `--delete-branch` num PR pra `main`: a head é a `develop`.
 - O CI roda sem credenciais R2, de propósito.
 
@@ -55,7 +55,5 @@ repo `filipesfbr/workflow-test`: leia o README dele antes de mexer no fluxo ou s
 - **Uma réplica só.** Duas instâncias gravam prints duplicados no mesmo bucket. O `npm run dev` local usa o `.env.local`, que aponta pro bucket real, e também grava lá.
 - Não rode `npm run build` com o `next dev` ligado: os dois usam `.next`.
 - Push feito com `GITHUB_TOKEN` (bump, sync) não dispara workflow: o commit do bump não gera run de CI.
-- O deploy sai da `develop`, onde o bot também commita (bump, sync). Só não deploya duas vezes por merge porque o
-  Render está em "After CI Checks Pass" e o commit do bot não tem check. Com "On Commit" seriam dois deploys.
 - Render Free (Docker, Health Check Path `/api/health`): o serviço dorme após 15 min sem tráfego e a captura para junto. Um monitor de uptime (UptimeRobot) pinga o `/api/health` a cada 10 min ou menos; se ele sair do ar, os prints param.
 - Não guarde segredo no `config.json`: ele é legível pela URL pública do bucket.

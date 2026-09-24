@@ -99,7 +99,3 @@ propriedade das câmeras.
 
 As imagens são exibidas através do portal [alerta.rolante.ifrs.edu.br](https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios)
 e das páginas de câmera em [rolante.solutti.net](https://rolante.solutti.net/rioareia/).
-
-> A versão estática anterior (`index.html`) segue publicada em
-> [filipesfbr.github.io/cameras-rolante](https://filipesfbr.github.io/cameras-rolante/) até o novo domínio existir;
-> depois ela vira um redirect de uma linha para ele.

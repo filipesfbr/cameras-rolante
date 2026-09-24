@@ -1,8 +1,8 @@
 name: Release on Main
 
-# Este workflow não escreve em main: aqui só lemos a versão já mergeada e
-# tagueamos. O bump vive no bump.yml, na develop. O deploy (Render) sai da
-# develop, não da main: a main é só o marcador de release.
+# Este workflow NÃO pode escrever em main: um push extra aqui gera um segundo
+# deploy. Aqui só lemos a versão já mergeada e tagueamos. O bump vive no bump.yml,
+# na develop.
 #
 # `workflow_dispatch` permite disparar o release na mão (re-run, ou depois de um
 # merge feito por automação: evento de push disparado por GITHUB_TOKEN NÃO cria run,
