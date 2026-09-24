@@ -16,7 +16,7 @@ e os streams são carregados das páginas das câmeras em `rolante.solutti.net`.
   do m3u8 (sem browser), gera `full` (1280px) e `thumb` (320px) numa chamada só e sobe para o
   Cloudflare R2. O container não guarda nada em disco.
 - **Histórico:** faixa recolhível em cada câmera, com scroll infinito para trás e print novo
-  entrando sozinho. As imagens vêm direto do R2 pela URL pública; a VPS só entrega a lista de keys.
+  entrando sozinho. As imagens vêm direto do R2 pela URL pública; o servidor só entrega a lista de keys.
 - **Retenção:** varredura própria ao subir e a cada 24h apaga os dias mais velhos que `retentionDays`.
 - **Admin (`/admin`, com senha):** toggle mestre, intervalo global e por câmera, retenção, cadastro
   de câmeras (com teste antes de salvar), ativar/desativar, apagar período.
@@ -74,12 +74,18 @@ feat/x ──PR (squash)──▶ develop ──PR "release: vX.Y.Z" (merge comm
 - O merge do PR de release na `main` faz o `release.yml` criar a tag `vX.Y.Z` e a Release, e sincronizar
   `main → develop`. O deploy sai desse mesmo push na `main` (Render).
 
-## Deploy (EasyPanel)
+## Deploy (Render)
 
-1. App a partir do repositório, branch `main`, build por **Dockerfile** (traz ffmpeg e tzdata).
-2. Cadastre as variáveis acima no app. Sem volume: o container é stateless.
-3. Mantenha **uma réplica só**: duas réplicas gravariam prints duplicados no mesmo bucket.
-4. Domínio com HTTPS: o cookie de sessão é `secure` em produção.
+1. Web Service a partir do repositório, branch `main`, runtime **Docker** (o `Dockerfile` traz ffmpeg e
+   tzdata). O plano Free serve.
+2. Cadastre as variáveis acima em *Environment*. O filesystem é efêmero, o que não importa: o app é stateless.
+3. **Auto-Deploy: "After CI Checks Pass".** O deploy só sai com o `ci` verde na `main`; com "On Commit"
+   ele sai mesmo com o CI vermelho.
+4. Mantenha **uma instância só** (o plano Free já não escala além disso): duas gravariam prints
+   duplicados no mesmo bucket.
+5. **No plano Free o serviço dorme após 15 min sem tráfego, e a captura para junto** (ela roda dentro do
+   processo). Aponte um monitor de uptime para `/api/health` a cada 10 min ou menos para mantê-lo acordado.
+6. O Render já serve HTTPS em `*.onrender.com`: o cookie de sessão é `secure` em produção.
 
 ## Cloudflare R2
 
