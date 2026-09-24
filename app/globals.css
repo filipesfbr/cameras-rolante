@@ -1,0 +1,66 @@
+:root {
+  --bg: #0b1211;
+  --bg-bar: #161f1d;
+  --bg-label: #141c1a;
+  --bg-history: #0d1211;
+
+  --text: #e8e8e8;
+  --text-strong: #f2f2f2;
+  --muted-1: #8a8f98;
+  --muted-2: #7d828c;
+  --muted-3: #6b6f78;
+  --muted-4: #6f7873;
+  --muted-label: #5f6570;
+
+  --accent: #5b9bf0;
+  --accent-bg: rgba(91, 155, 240, 0.16);
+  --accent-text: #8fbcf5;
+  --accent-border: rgba(91, 155, 240, 0.35);
+  --link: #79aef5;
+  --link-hover: #a4c9fb;
+
+  --ok: #7fc97f;
+  --bad: #e07a7a;
+  --ok-bg: #1e3a24;
+  --bad-bg: #3a2424;
+
+  --border: rgba(255, 255, 255, 0.08);
+  --border-soft: rgba(255, 255, 255, 0.06);
+  --border-btn: rgba(255, 255, 255, 0.1);
+  --btn-bg: rgba(255, 255, 255, 0.06);
+  --btn-text: #c7cad1;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+
+  --font-ui: var(--font-space-grotesk), 'Segoe UI', Arial, sans-serif;
+  --font-mono: var(--font-space-mono), 'Consolas', 'Courier New', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* reserva o espaço da barra de rolagem: a largura das câmeras não pula quando a página passa a ter scroll */
+html {
+  scrollbar-gutter: stable;
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+}
