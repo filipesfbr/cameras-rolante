@@ -31,7 +31,8 @@ export default async function Home() {
           rolante.solutti.net
         </a>
         .<br />
-        Este site não é responsável pelo conteúdo, disponibilidade ou propriedade das câmeras.
+        Este site não é responsável pelo conteúdo, disponibilidade ou propriedade das câmeras.<br />
+        O horário dos prints é o de Brasília e pode diferir do relógio impresso na imagem da câmera.
       </footer>
     </div>
   );

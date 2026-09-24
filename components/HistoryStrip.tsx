@@ -20,7 +20,7 @@ async function fetchFrames(cam: string, qs: string): Promise<Frame[]> {
  * Faixa horizontal: lote inicial de K thumbs, scroll infinito pra direita (mais antigos),
  * print novo entra sozinho na esquerda, mas só se o usuário estiver na ponta ao vivo.
  */
-export default function HistoryStrip({ cam, batch, intervalMin, selected, onOpen }: { cam: string; batch: number; intervalMin: number; selected: string | null; onOpen: (f: Frame) => void }) {
+export default function HistoryStrip({ cam, batch, intervalMin, selected, onOpen, onFrames }: { cam: string; batch: number; intervalMin: number; selected: string | null; onOpen: (f: Frame) => void; onFrames: (f: Frame[]) => void }) {
   const [frames, setFrames] = useState<Frame[]>([]);
   const buffer = useRef<Frame[]>([]); // chegaram enquanto o usuário estava no passado
   const [buffered, setBuffered] = useState(0);
@@ -55,6 +55,21 @@ export default function HistoryStrip({ cam, batch, intervalMin, selected, onOpen
   useEffect(() => {
     void loadOlder();
   }, [loadOlder]);
+
+  // o card navega pelas setas usando esta lista
+  useEffect(() => onFrames(frames), [frames, onFrames]);
+
+  // seta mudou o print: traz o thumb selecionado pra dentro da faixa (só rola a faixa, nunca a página).
+  // Chegar na ponta direita também dispara o scroll infinito.
+  useEffect(() => {
+    const sc = scroller.current;
+    const el = sc?.querySelector<HTMLElement>('[aria-pressed="true"]');
+    if (!sc || !el) return;
+    const a = el.getBoundingClientRect();
+    const b = sc.getBoundingClientRect();
+    if (a.left < b.left) sc.scrollBy({ left: a.left - b.left - 8, behavior: 'smooth' });
+    else if (a.right > b.right) sc.scrollBy({ left: a.right - b.right + 8, behavior: 'smooth' });
+  }, [selected]);
 
   // scroll infinito: sentinela na ponta direita. Recria ao crescer a lista pra re-checar se ainda está visível.
   useEffect(() => {

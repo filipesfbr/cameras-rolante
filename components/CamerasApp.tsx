@@ -43,7 +43,7 @@ export default function CamerasApp({ cameras, historyBatch }: { cameras: PublicC
     <>
       <header className={s.header}>
         <div>
-          <h1 className={s.title}>Cameras dos Rios - Rolante</h1>
+          <h1 className={s.title}>Cameras dos Rios - Rolante/RS</h1>
           <div className={s.sub}>
             Links das câmeras obtidos no portal{' '}
             <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">

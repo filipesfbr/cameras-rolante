@@ -227,12 +227,11 @@
   padding: 28px;
   width: 280px;
   display: flex;
-  flex-direction: column;
   gap: 12px;
 }
-.gateTitle {
-  font-size: 14px;
-  color: var(--btn-text);
+.gate .input {
+  flex: 1;
+  min-width: 0;
 }
 
 @media (max-width: 600px) {

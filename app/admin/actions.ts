@@ -58,7 +58,7 @@ export async function saveSettings(s: {
       ...cfg,
       captureEnabled: !!s.captureEnabled,
       intervalSec: okInterval(s.intervalSec),
-      historyBatch: intOr(s.historyBatch, 4, 24, 'imagens no histórico'),
+      historyBatch: intOr(s.historyBatch, 4, 48,'imagens no histórico'),
       retentionDays: intOr(s.retentionDays, 1, 365, 'retenção (dias)'),
     });
     await rescheduleAll();

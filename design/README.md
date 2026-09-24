@@ -40,7 +40,7 @@ The files in this bundle (`Cameras Rolante.dc.html`, `Admin Rolante.dc.html`) ar
 **Purpose**: internal-only page to manage cameras and history/capture settings. Not linked from the public page.
 
 **Layout**: same header pattern, dark theme. Password gate (centered card, single password input + "Entrar" button — cosmetic only) gates access. Once "authed", shows:
-- "Configurações gerais" card: default capture interval (select: 5/15/30/60 min), number of history images to keep (number input 4–24).
+- "Configurações gerais" card: default capture interval (select: 5/15/30/60 min), number of history images to keep (number input 4–48).
 - "Câmeras" card: "+ Adicionar câmera" button opens an inline form (nome do ponto, rio/local, URL do stream m3u8, URL da página fonte). Each existing camera is a row with name/location, monospace stream URL, a "Remover" button, and two pill toggle buttons: Ativa/Inativa and Histórico ligado/desligado (green `#7fc97f` on `#1e3a24` when on, muted/red otherwise).
 - "Sair" button at the bottom to log out (resets local auth state).
 

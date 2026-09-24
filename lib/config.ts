@@ -15,7 +15,7 @@ export type Camera = {
 export type Config = {
   captureEnabled: boolean; // toggle mestre
   intervalSec: number; // padrão global
-  historyBatch: number; // 4–24, lote inicial da faixa
+  historyBatch: number; // 4–48, lote inicial da faixa
   retentionDays: number;
   cameras: Camera[];
 };

@@ -103,7 +103,7 @@ export default function AdminPanel({ config }: { config: Config }) {
             </label>
             <label className={s.field}>
               Imagens no histórico
-              <input className={`${s.input} ${s.narrow}`} type="number" min={4} max={24} value={set.historyBatch} onChange={(e) => setSet({ ...set, historyBatch: Number(e.target.value) })} />
+              <input className={`${s.input} ${s.narrow}`} type="number" min={4} max={48} value={set.historyBatch} onChange={(e) => setSet({ ...set, historyBatch: Number(e.target.value) })} />
             </label>
             <label className={s.field}>
               Retenção (dias)

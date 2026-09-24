@@ -119,7 +119,7 @@ Fonte: `design/README.md` + os dois protótipos. O README é explícito que o fo
 
 **Grid view:** botão no header abre mosaico fullscreen preto, sem chrome, `gap:2px`, `object-fit:contain`. ✕ e Escape fecham. Uma instância HLS por vídeo, destruída ao fechar.
 
-**Admin:** portão de senha, card "Configurações gerais" (select de intervalo, número de imagens 4–24), card "Câmeras" com form inline de adicionar e, por câmera, URL em monoespaçada, botão Remover e dois pills: `Ativa/Inativa` e `Histórico: ligado/desligado`.
+**Admin:** portão de senha, card "Configurações gerais" (select de intervalo, número de imagens 4–48), card "Câmeras" com form inline de adicionar e, por câmera, URL em monoespaçada, botão Remover e dois pills: `Ativa/Inativa` e `Histórico: ligado/desligado`.
 
 ### Onde a implementação diverge do protótipo (de propósito)
 
@@ -161,7 +161,7 @@ Vive no R2 como `config.json`, com cache em memória invalidado no save. `PutObj
 type Config = {
   captureEnabled: boolean;      // toggle mestre
   intervalSec: number;          // padrão global (5/15/30/60 min)
-  historyBatch: number;         // 4–24, lote inicial da faixa
+  historyBatch: number;         // 4–48, lote inicial da faixa
   retentionDays: number;
   cameras: Array<{
     id: string;                 // slug, vira prefixo de key
