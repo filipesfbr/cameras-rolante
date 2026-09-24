@@ -84,10 +84,13 @@ export default function CameraCard({ cam, historyBatch, onOpenLive, onOpenFrame 
           )}
         </div>
 
-        <span className={`${s.badge} ${frame ? s.print : status.ok ? s.ok : s.bad}`}>
-          <span className={s.dot} />
-          {frame ? `PRINT · ${stampOf(frame)}` : status.text}
-        </span>
+        {/* com um print aberto o vídeo segue por baixo, então o status ao vivo enganaria; o horário já vai sobre a imagem */}
+        {!frame && (
+          <span className={`${s.badge} ${status.ok ? s.ok : s.bad}`}>
+            <span className={s.dot} />
+            {status.text}
+          </span>
+        )}
 
         <div className={s.actions}>
           {frame && (
