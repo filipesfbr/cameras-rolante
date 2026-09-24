@@ -22,6 +22,17 @@ npm run build       # output: 'standalone', é o que o Dockerfile roda
 - As imagens vêm direto da URL pública do bucket (`R2_PUBLIC_URL`); o servidor só entrega a lista de keys em `/api/frames`.
 - Auth: cookie HMAC assinado com `ADMIN_PASSWORD` (`lib/session.ts`). O `proxy.ts` só redireciona; **toda Server Action de mutação tem que chamar `requireAdmin()`**, porque Server Action é endpoint público.
 
+## Pipeline
+
+`CI → bump na develop → release por tag → sync main → develop` (`.github/workflows/`). É o padrão do
+repo `filipesfbr/workflow-test`: leia o README dele antes de mexer no fluxo ou simplificar uma guarda.
+
+- Feature: `feat/x` → PR (squash) → `develop`. Release: PR `release: vX.Y.Z` de `develop` → `main` (merge commit). O deploy (Render) sai do push na `main`.
+- O `bump.yml` sobe a versão **na `develop`**, nunca na branch de um PR: o push do bot num PR faz o GitHub travar os checks em "Approve and run". Minor/major: edite o `package.json` num PR ou rode o `bump.yml` com `kind`. Abra o PR de release só depois do bump terminar.
+- O `release.yml` só cria tag e Release e **nunca escreve na `main`** (push extra = segundo deploy). Tag já existente = não faz nada.
+- Nunca `--delete-branch` num PR pra `main`: a head é a `develop`.
+- O CI roda sem credenciais R2, de propósito.
+
 ## Convenções
 
 - Código e comentários em português. Comentários `ponytail:` marcam simplificações deliberadas e o limite delas.
@@ -33,5 +44,6 @@ npm run build       # output: 'standalone', é o que o Dockerfile roda
 
 - **Uma réplica só.** Duas instâncias gravam prints duplicados no mesmo bucket. O `npm run dev` local usa o `.env.local`, que aponta pro bucket real, e também grava lá.
 - Não rode `npm run build` com o `next dev` ligado: os dois usam `.next`.
+- Push feito com `GITHUB_TOKEN` (bump, sync) não dispara workflow: o commit do bump não gera run de CI.
 - Não guarde segredo no `config.json`: ele é legível pela URL pública do bucket.
 - Não existe `.env.example` versionado. As variáveis estão na tabela do README.

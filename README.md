@@ -62,6 +62,18 @@ npm test           # paginação, fuso, SSRF e sessão
 npm run build
 ```
 
+## Fluxo de release
+
+```
+feat/x ──PR (squash)──▶ develop ──PR "release: vX.Y.Z" (merge commit)──▶ main ──▶ tag + Release
+```
+
+- O CI (`npm run typecheck`, `npm test`, `npm run build`) roda em todo PR e em push na `develop`/`main`.
+- Um merge na `develop` faz o `bump.yml` subir a versão do `package.json` (1 bump por ciclo de release).
+  Minor/major: edite o `package.json` num PR ou rode o workflow com `kind`.
+- O merge do PR de release na `main` faz o `release.yml` criar a tag `vX.Y.Z` e a Release, e sincronizar
+  `main → develop`. O deploy sai desse mesmo push na `main` (Render).
+
 ## Deploy (EasyPanel)
 
 1. App a partir do repositório, branch `main`, build por **Dockerfile** (traz ffmpeg e tzdata).
