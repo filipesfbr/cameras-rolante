@@ -1,121 +1,105 @@
-# Câmeras Rolante
+<div align="center">
 
-Câmeras de monitoramento dos rios de Rolante/RS, ao vivo e com histórico de prints.
-As câmeras apontam para uma régua graduada e queimam data/hora na imagem, então o histórico
-mostra a evolução do nível do rio, inclusive de madrugada.
+# 🌊 Câmeras Rolante
 
-O projeto apenas exibe as imagens; os links das câmeras vêm do portal
-[alerta.rolante.ifrs.edu.br](https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios),
-e os streams são carregados das páginas das câmeras em `rolante.solutti.net`.
+**Câmeras ao vivo dos rios de Rolante/RS, com histórico de prints gravado 24 horas por dia.**
 
-## Como funciona
+[![Acessar o site](https://img.shields.io/badge/%F0%9F%94%B4_Acessar_o_site-cameras--rolante.onrender.com-2ea44f?style=for-the-badge)](https://cameras-rolante.onrender.com)
 
-- **Ao vivo:** o navegador toca o HLS direto da fonte (hls.js), com reconexão, contagem
-  regressiva, `FORA DO AR` e detecção de stream travado.
-- **Captura 24/7:** o servidor Node roda um timer por câmera. A cada ciclo o `ffmpeg` puxa um frame
-  do m3u8 (sem browser), gera `full` (1280px) e `thumb` (320px) numa chamada só e sobe para o
-  Cloudflare R2. O container não guarda nada em disco.
-- **Histórico:** faixa recolhível em cada câmera, com scroll infinito para trás e print novo
-  entrando sozinho. As imagens vêm direto do R2 pela URL pública; o servidor só entrega a lista de keys.
-- **Retenção:** varredura própria ao subir e a cada 24h apaga os dias mais velhos que `retentionDays`.
-- **Admin (`/admin`, com senha):** toggle mestre, intervalo global e por câmera, retenção, cadastro
-  de câmeras (com teste antes de salvar), ativar/desativar, apagar período.
+[![CI](https://github.com/filipesfbr/cameras-rolante/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/filipesfbr/cameras-rolante/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+![Cloudflare R2](https://img.shields.io/badge/Cloudflare-R2-F38020?logo=cloudflare&logoColor=white)
+![Render](https://img.shields.io/badge/deploy-Render-46E3B7?logo=render&logoColor=white)
+[![Licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
 
-### Armazenamento no R2
+</div>
+
+---
+
+## 📍 O que é
+
+Um site que mostra as câmeras de monitoramento dos rios de Rolante/RS **ao vivo** e guarda um **histórico de
+prints**. As câmeras apontam para uma régua graduada e queimam data e hora na imagem, então o histórico
+mostra a evolução do nível do rio, inclusive de madrugada, quando ninguém está olhando.
+
+O projeto apenas exibe as imagens. Os links das câmeras vêm do portal
+[alerta.rolante.ifrs.edu.br](https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios), e os streams são
+carregados das páginas das câmeras em `rolante.solutti.net`.
+
+## ✨ O que tem
+
+- 🔴 **Ao vivo** direto no navegador (HLS com [hls.js](https://github.com/video-dev/hls.js)), com reconexão
+  automática, contagem regressiva, aviso `FORA DO AR` e detecção de stream travado.
+- 🖼️ **Mosaico em tela cheia** com todas as câmeras de uma vez.
+- 🕰️ **Histórico por câmera:** faixa de miniaturas com rolagem infinita para trás. Print novo entra sozinho,
+  clicar amplia, e as setas `←` `→` (botões e teclado) navegam entre os prints, com o horário sobre a imagem.
+  O botão **Ao vivo** volta para o vídeo.
+- 🤖 **Captura 24/7 no servidor:** grava mesmo com ninguém com o navegador aberto.
+
+## 🧭 Como funciona
+
+```mermaid
+flowchart LR
+    C["📹 Câmeras<br/>(stream HLS)"] -- "ffmpeg puxa 1 frame" --> S["🖥️ Servidor Next.js"]
+    S -- "grande 1280px + miniatura 320px" --> R[("☁️ Cloudflare R2")]
+    R -- "URL pública do bucket" --> B["🌐 Navegador"]
+    S -- "lista de prints (/api/frames)" --> B
+    C -. "ao vivo, direto da fonte" .-> B
+```
+
+1. O servidor Node roda **um timer por câmera**. A cada ciclo (por padrão, de 15 em 15 minutos) o `ffmpeg`
+   lê o stream e extrai **um frame**, sem abrir navegador.
+2. Numa única chamada ele gera duas versões, a **grande** (1280 px) e a **miniatura** (320 px), e sobe as duas
+   para o Cloudflare R2. O container não guarda nada em disco.
+3. No site, o vídeo ao vivo vem direto da fonte. Já as imagens do histórico vêm direto do R2; o servidor só
+   entrega a lista de nomes.
+
+## 🗂️ Onde as imagens ficam salvas
+
+No **Cloudflare R2** (armazenamento compatível com S3), num bucket com leitura pública. Não há banco de dados:
 
 ```
 bucket/
-  config.json                                  configuração editada no /admin
-  shots/<camId>/<AAAA-MM-DD>/<HHmmss>.jpg       1280px, ~180KB
-  shots/<camId>/<AAAA-MM-DD>/<HHmmss>.thumb.jpg  320px, ~10KB
+  shots/<câmera>/<AAAA-MM-DD>/<HHmmss>.jpg         imagem grande, 1280 px, ~180 KB
+  shots/<câmera>/<AAAA-MM-DD>/<HHmmss>.thumb.jpg   miniatura, 320 px, ~10 KB
+  config.json                                       configuração do app (não guarde segredo nele)
 ```
 
-A key é o próprio id da imagem e a ordem alfabética do `ListObjectsV2` já é a cronológica, sem banco
-nem índice. O dia é sempre o de Brasília, independente do fuso do container.
+- O nome do arquivo já é o identificador do print, e a **ordem alfabética é a ordem cronológica**, então não
+  precisa de índice.
+- O dia é sempre o de **Brasília**, independente do fuso do servidor.
+- **Retenção:** por padrão, 30 dias. Uma varredura própria, ao subir e a cada 24 h, apaga os dias mais velhos.
 
-## Stack
+## 🛠️ Stack
 
-Next.js (App Router) + TypeScript, CSS Modules com tokens em `app/globals.css`, hls.js,
-`@aws-sdk/client-s3` (R2 é compatível com S3) e ffmpeg. Sem banco de dados.
-
-## Variáveis de ambiente
-
-| Variável | O que é |
+| Camada | Tecnologia |
 |---|---|
-| `R2_ACCOUNT_ID` | ID da conta Cloudflare |
-| `R2_ACCESS_KEY_ID` / `R2_SECRET_ACCESS_KEY` | token R2 `Object Read & Write`, escopado só no bucket |
-| `R2_BUCKET` | nome do bucket |
-| `R2_PUBLIC_URL` | URL pública do bucket (`https://pub-….r2.dev` ou domínio próprio), sem barra final |
-| `ADMIN_PASSWORD` | senha do `/admin` (também assina o cookie de sessão) |
-| `TZ` | `America/Sao_Paulo` |
+| App | [Next.js](https://nextjs.org) 16 (App Router) + TypeScript, CSS Modules |
+| Vídeo ao vivo | [hls.js](https://github.com/video-dev/hls.js) |
+| Captura | [ffmpeg](https://ffmpeg.org) rodando dentro do processo do servidor |
+| Armazenamento | Cloudflare R2, via `@aws-sdk/client-s3` |
+| Deploy | Docker no [Render](https://render.com) |
+| CI e releases | GitHub Actions |
 
-Para rodar localmente, crie um `.env.local` na raiz com essas variáveis.
+## ⚠️ Limites conhecidos
 
-## Rodar localmente
+- O carimbo de horário queimado pela câmera fica cerca de 2 minutos atrás do nome do arquivo: é o relógio e a
+  latência da câmera, não o fuso. O rodapé do site avisa isso.
+- A captura só aceita URLs `https` que resolvam para IP público. Um playlist remoto que redirecione ou aponte
+  segmentos para um endereço interno não é filtrado pela aplicação; fechar isso exige restringir a saída de rede
+  do container.
+- Se a fonte de uma câmera cair, a captura dela dá timeout (30 s) e tenta de novo no ciclo seguinte, sem afetar
+  as outras.
 
-Precisa de Node 20+ e `ffmpeg` no PATH.
+## 📄 Licença e créditos
 
-```bash
-npm install
-npm run dev        # http://localhost:3000
-npm test           # paginação, fuso, SSRF e sessão
-npm run build
-```
+Licença **MIT**, veja [`LICENSE`](LICENSE). Este site não é responsável pelo conteúdo, disponibilidade ou
+propriedade das câmeras.
 
-## Fluxo de release
+As imagens são exibidas através do portal [alerta.rolante.ifrs.edu.br](https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios)
+e das páginas de câmera em [rolante.solutti.net](https://rolante.solutti.net/rioareia/).
 
-```
-feat/x ──PR (squash)──▶ develop ──PR "release: vX.Y.Z" (merge commit)──▶ main ──▶ tag + Release
-                          │
-                          └──▶ deploy (Render)
-```
-
-- O CI (`npm run typecheck`, `npm test`, `npm run build`) roda em todo PR e em push na `develop`/`main`.
-- Um merge na `develop` faz o `bump.yml` subir a versão do `package.json` (1 bump por ciclo de release).
-  Minor/major: edite o `package.json` num PR ou rode o workflow com `kind`.
-- **O deploy (Render) sai do push na `develop`**, depois do `ci` ficar verde. O commit do bump, feito pelo
-  bot com `GITHUB_TOKEN`, não dispara CI, e o Render não deploya commit sem nenhum check: ele não gera deploy.
-- O merge do PR de release na `main` só faz o `release.yml` criar a tag `vX.Y.Z` e a Release e sincronizar
-  `main → develop`. A `main` é o marcador de release e não faz deploy.
-
-## Deploy (Render)
-
-1. Web Service a partir do repositório, branch `develop`, runtime **Docker** (o `Dockerfile` traz ffmpeg e
-   tzdata). O plano Free serve. Health Check Path: `/api/health`.
-2. Cadastre as variáveis acima em *Environment*. O filesystem é efêmero, o que não importa: o app é stateless.
-3. **Auto-Deploy: "After CI Checks Pass".** O deploy só sai com o `ci` verde na `develop`; com "On Commit"
-   ele sai mesmo com o CI vermelho, e ainda duplica: um deploy no merge e outro no commit do bump.
-4. Mantenha **uma instância só** (o plano Free já não escala além disso): duas gravariam prints
-   duplicados no mesmo bucket.
-5. **No plano Free o serviço dorme após 15 min sem tráfego, e a captura para junto** (ela roda dentro do
-   processo). Aponte um monitor de uptime para `/api/health` a cada 10 min ou menos para mantê-lo acordado.
-6. O Render já serve HTTPS em `*.onrender.com`: o cookie de sessão é `secure` em produção.
-
-## Cloudflare R2
-
-1. Crie o bucket e habilite a leitura pública (Settings → Public Development URL, ou um domínio
-   customizado, que é o recomendado para produção: o `r2.dev` tem limite de taxa).
-2. R2 → Manage API Tokens → token `Object Read & Write`, **escopado só nesse bucket** (não use
-   `Admin`). O secret é mostrado uma única vez.
-3. Se o upload falhar com erro de assinatura ou header não suportado, confira o
-   `requestChecksumCalculation: 'WHEN_REQUIRED'` em `lib/r2.ts`.
-
-O bucket público expõe leitura, não listagem. O `config.json` fica legível, então não guarde segredo nele.
-
-## Segurança
-
-O `/admin` é protegido por senha; toda Server Action de mutação valida a sessão (`requireAdmin()`),
-porque Server Action é um endpoint público e o `proxy.ts` sozinho não basta. O cadastro e o teste de
-câmera só aceitam URLs `https` que resolvam para IP público. Limite conhecido: um playlist remoto
-que redirecione ou aponte segmentos para um endereço interno não é filtrado pela aplicação; para
-fechar isso é preciso restringir a saída de rede do container.
-
-## Licença
-
-MIT, veja `LICENSE`. Este site não é responsável pelo conteúdo, disponibilidade ou propriedade das câmeras.
-
-## Deploy antigo
-
-A versão estática anterior (`index.html`) segue publicada em
-https://filipesfbr.github.io/cameras-rolante/ até o novo domínio existir; depois ela vira um
-redirect de uma linha para ele.
+> A versão estática anterior (`index.html`) segue publicada em
+> [filipesfbr.github.io/cameras-rolante](https://filipesfbr.github.io/cameras-rolante/) até o novo domínio existir;
+> depois ela vira um redirect de uma linha para ele.
