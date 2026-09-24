@@ -129,7 +129,7 @@ export default function AdminPanel({ config }: { config: Config }) {
 
           {showAdd && (
             <div className={s.inner}>
-              <input className={s.input} placeholder="Nome do ponto (ex: Ponte do Grassmann)" value={nc.name} onChange={(e) => setNc({ ...nc, name: e.target.value })} />
+              <input className={s.input} placeholder="Nome do ponto (ex.: Ponte do Grassmann)" value={nc.name} onChange={(e) => setNc({ ...nc, name: e.target.value })} />
               <input className={s.input} placeholder="Rio / local" value={nc.location} onChange={(e) => setNc({ ...nc, location: e.target.value })} />
               <input className={s.input} placeholder="URL do stream (m3u8, https)" value={nc.streamUrl} onChange={(e) => setNc({ ...nc, streamUrl: e.target.value })} />
               <input className={s.input} placeholder="URL da página fonte" value={nc.sourceUrl} onChange={(e) => setNc({ ...nc, sourceUrl: e.target.value })} />
