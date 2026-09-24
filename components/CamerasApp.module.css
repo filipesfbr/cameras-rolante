@@ -1,0 +1,62 @@
+.header {
+  padding: 22px 32px;
+  background: var(--bg-bar);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.title {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: var(--text-strong);
+}
+.sub {
+  font-size: 13px;
+  color: var(--muted-1);
+  margin-top: 6px;
+}
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.gridBtn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid var(--border-btn);
+  border-radius: 8px;
+  padding: 9px;
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.main {
+  padding: 20px;
+  flex: 1;
+}
+.columns {
+  column-count: var(--cols, 1); /* máximo de colunas, conforme a quantidade de câmeras */
+  column-width: 380px; /* piso: em tela estreita cai pra menos colunas (mobile = 1) */
+  column-gap: 16px;
+}
+.empty {
+  color: var(--muted-1);
+  font-size: 14px;
+}
+
+@media (max-width: 600px) {
+  .header {
+    padding: 16px;
+  }
+  .main {
+    padding: 12px;
+  }
+}

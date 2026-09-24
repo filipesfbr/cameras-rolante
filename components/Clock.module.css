@@ -1,0 +1,9 @@
+.time {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--text);
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

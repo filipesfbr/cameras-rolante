@@ -1,0 +1,243 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  padding: 18px 32px;
+  background: var(--bg-bar);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+.sub {
+  font-size: 12px;
+  color: var(--muted-1);
+  margin-top: 4px;
+}
+.main {
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+}
+.card {
+  background: var(--bg-bar);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-strong);
+}
+.inner {
+  background: var(--bg-label);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.fields {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted-1);
+}
+.input,
+.select {
+  background: var(--bg-history);
+  border: 1px solid var(--border-btn);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+}
+.input:focus,
+.select:focus {
+  outline: 1px solid var(--accent);
+}
+.narrow {
+  width: 110px;
+}
+.btn {
+  background: var(--accent);
+  color: #0b1211;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.ghost {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid var(--border-btn);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.ghost:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.danger {
+  background: transparent;
+  color: var(--bad);
+  border: 1px solid #3a2424;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.dangerSolid {
+  background: var(--bad);
+  color: #0b1211;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.camTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.camName {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+}
+.mono {
+  font-size: 11px;
+  color: var(--muted-2);
+  font-family: var(--font-mono);
+  margin-top: 4px;
+  word-break: break-all;
+}
+.pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.pill {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+.on {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.offBad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.offMuted {
+  background: #333;
+  color: #999;
+}
+.msg {
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+.ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+.bad {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+.hint {
+  font-size: 12px;
+  color: var(--muted-2);
+  line-height: 1.5;
+}
+.preview {
+  max-width: 320px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.gateWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.gate {
+  background: var(--bg-bar);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  width: 280px;
+  display: flex;
+  gap: 12px;
+}
+.gate .input {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  .header,
+  .main {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
