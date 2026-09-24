@@ -36,3 +36,27 @@
   object-fit: contain; /* nunca corta a imagem */
   background: #000;
 }
+
+/* retrato (celular em pé): uma câmera embaixo da outra, na largura toda; se passar da tela, rola */
+@media (orientation: portrait) {
+  .grid {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-content: stretch;
+    overflow-y: auto;
+  }
+  .video {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    flex: none;
+  }
+  /* margem auto centraliza quando cabe e zera quando estoura (justify-content: center cortaria o topo) */
+  .video:first-child {
+    margin-top: auto;
+  }
+  .video:last-child {
+    margin-bottom: auto;
+  }
+}
