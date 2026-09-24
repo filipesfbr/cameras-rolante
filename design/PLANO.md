@@ -101,7 +101,7 @@ Bucket com leitura pública por **domínio customizado** (`imgs.<dominio>`), ref
 
 > Domínio customizado exige um domínio hospedado na Cloudflare. Sem ele, dá pra começar no subdomínio `r2.dev` (um clique, sem domínio próprio) — mas a Cloudflare limita taxa e diz que não é pra produção. Trocar depois é só mudar `R2_PUBLIC_URL`.
 >
-> **Situação atual:** bucket `cameras-rolante` com o `r2.dev` habilitado (`https://pub-91ab0e96fe60426bb98622b7f55e1b82.r2.dev`). A leitura é pública por chave (sem login); listar o bucket não é possível por ali. Como o `config.json` mora no mesmo bucket, ele também é legível: não guardar segredo nele.
+> **Situação atual:** bucket `cameras-rolante` com o `r2.dev` habilitado (`https://pub-….r2.dev`). A leitura é pública por chave (sem login); listar o bucket não é possível por ali. Como o `config.json` mora no mesmo bucket, ele também é legível: não guardar segredo nele.
 
 ---
 

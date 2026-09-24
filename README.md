@@ -49,7 +49,7 @@ Next.js (App Router) + TypeScript, CSS Modules com os tokens do design (`design/
 | `ADMIN_PASSWORD` | senha do `/admin` (também assina o cookie de sessão) |
 | `TZ` | `America/Sao_Paulo` |
 
-Copie `.env.example` para `.env.local` para rodar localmente.
+Para rodar localmente, crie um `.env.local` na raiz com essas variáveis.
 
 ## Rodar localmente
 
