@@ -35,7 +35,7 @@ nem índice. O dia é sempre o de Brasília, independente do fuso do container.
 
 ## Stack
 
-Next.js (App Router) + TypeScript, CSS Modules com os tokens do design (`design/`), hls.js,
+Next.js (App Router) + TypeScript, CSS Modules com tokens em `app/globals.css`, hls.js,
 `@aws-sdk/client-s3` (R2 é compatível com S3) e ffmpeg. Sem banco de dados.
 
 ## Variáveis de ambiente

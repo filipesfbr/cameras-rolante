@@ -1,6 +1,6 @@
 # Câmeras Rolante
 
-Next.js (App Router) + TypeScript que mostra câmeras dos rios de Rolante/RS ao vivo e grava um histórico de prints 24/7 no Cloudflare R2. Sem banco de dados. O README tem a visão de produto e o deploy; `design/PLANO.md` tem as decisões e a checklist de verificação.
+Next.js (App Router) + TypeScript que mostra câmeras dos rios de Rolante/RS ao vivo e grava um histórico de prints 24/7 no Cloudflare R2. Sem banco de dados. O README tem a visão de produto e o deploy.
 
 ## Comandos
 
@@ -26,7 +26,7 @@ npm run build       # output: 'standalone', é o que o Dockerfile roda
 
 - Código e comentários em português. Comentários `ponytail:` marcam simplificações deliberadas e o limite delas.
 - Arquivos em `lib/` importam com caminho relativo e extensão `.ts` (o teste roda com `--experimental-strip-types`: sem `enum`, sem alias `@/`). `app/` e `components/` usam `@/`.
-- CSS Modules com os tokens de `design/`; não introduzir biblioteca de UI.
+- CSS Modules com os tokens de `app/globals.css`; não introduzir biblioteca de UI.
 - Toda URL de câmera passa por `assertPublicUrl` (`lib/ssrf.ts`): só https e IP público.
 
 ## Cuidados
