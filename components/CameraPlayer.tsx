@@ -10,7 +10,7 @@ export type PlayerStatus = { text: string; ok: boolean };
 
 /**
  * Reprodução HLS de uma câmera: reconexão com contagem regressiva, FORA DO AR e detecção de travamento.
- * Porta da lógica do index.html original (que já rodava em produção).
+ * Porta da lógica do antigo index.html (que já rodava em produção; removido, está no histórico do git).
  */
 export function useCameraPlayer(url: string) {
   const videoRef = useRef<HTMLVideoElement>(null);
