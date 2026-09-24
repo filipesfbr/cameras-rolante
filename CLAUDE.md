@@ -1,6 +1,16 @@
 # Câmeras Rolante
 
-Next.js (App Router) + TypeScript que mostra câmeras dos rios de Rolante/RS ao vivo e grava um histórico de prints 24/7 no Cloudflare R2. Sem banco de dados. O README tem a visão de produto e o deploy.
+Next.js (App Router) + TypeScript que mostra câmeras dos rios de Rolante/RS ao vivo e grava um histórico de prints 24/7 no Cloudflare R2. Sem banco de dados. O README tem só a visão de produto; ambiente, deploy e pipeline estão aqui.
+
+## Ambiente
+
+Node 24 (o do Dockerfile e do CI) e `ffmpeg` no PATH. Não há `.env.example` versionado: crie um `.env.local` na raiz com
+
+- `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`: conta, token e bucket do R2. O token é `Object Read & Write` **escopado só no bucket** (nunca `Admin`); o secret aparece uma única vez.
+- `R2_PUBLIC_URL`: URL pública do bucket (`https://pub-….r2.dev` ou domínio próprio, recomendado em produção porque o `r2.dev` tem limite de taxa), sem barra final. O bucket público expõe leitura, não listagem.
+- `ADMIN_PASSWORD`: senha do `/admin`; também assina o cookie de sessão.
+- `TZ`: `America/Sao_Paulo`.
+- Upload falhando com erro de assinatura ou header não suportado: confira `requestChecksumCalculation: 'WHEN_REQUIRED'` em `lib/r2.ts`.
 
 ## Comandos
 
@@ -47,5 +57,5 @@ repo `filipesfbr/workflow-test`: leia o README dele antes de mexer no fluxo ou s
 - Push feito com `GITHUB_TOKEN` (bump, sync) não dispara workflow: o commit do bump não gera run de CI.
 - O deploy sai da `develop`, onde o bot também commita (bump, sync). Só não deploya duas vezes por merge porque o
   Render está em "After CI Checks Pass" e o commit do bot não tem check. Com "On Commit" seriam dois deploys.
+- Render Free (Docker, Health Check Path `/api/health`): o serviço dorme após 15 min sem tráfego e a captura para junto. Um monitor de uptime (UptimeRobot) pinga o `/api/health` a cada 10 min ou menos; se ele sair do ar, os prints param.
 - Não guarde segredo no `config.json`: ele é legível pela URL pública do bucket.
-- Não existe `.env.example` versionado. As variáveis estão na tabela do README.
