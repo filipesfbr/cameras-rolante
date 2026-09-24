@@ -2,6 +2,4 @@ node_modules
 .next
 .git
 .env*
-index.html
-hls.min.js
 *.md

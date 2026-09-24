@@ -51,6 +51,10 @@
       'name   actions'
       'status status';
   }
+  /* sem o selo (print aberto) não sobra linha vazia nem o row-gap dela */
+  .label:not(:has(.badge)) {
+    grid-template-areas: 'name actions';
+  }
 }
 
 .name {
@@ -90,9 +94,6 @@
 }
 .bad {
   color: var(--bad);
-}
-.print {
-  color: var(--accent-text);
 }
 .dot {
   display: inline-block;
