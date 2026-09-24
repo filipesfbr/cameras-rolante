@@ -66,21 +66,25 @@ npm run build
 
 ```
 feat/x ──PR (squash)──▶ develop ──PR "release: vX.Y.Z" (merge commit)──▶ main ──▶ tag + Release
+                          │
+                          └──▶ deploy (Render)
 ```
 
 - O CI (`npm run typecheck`, `npm test`, `npm run build`) roda em todo PR e em push na `develop`/`main`.
 - Um merge na `develop` faz o `bump.yml` subir a versão do `package.json` (1 bump por ciclo de release).
   Minor/major: edite o `package.json` num PR ou rode o workflow com `kind`.
-- O merge do PR de release na `main` faz o `release.yml` criar a tag `vX.Y.Z` e a Release, e sincronizar
-  `main → develop`. O deploy sai desse mesmo push na `main` (Render).
+- **O deploy (Render) sai do push na `develop`**, depois do `ci` ficar verde. O commit do bump, feito pelo
+  bot com `GITHUB_TOKEN`, não dispara CI, e o Render não deploya commit sem nenhum check: ele não gera deploy.
+- O merge do PR de release na `main` só faz o `release.yml` criar a tag `vX.Y.Z` e a Release e sincronizar
+  `main → develop`. A `main` é o marcador de release e não faz deploy.
 
 ## Deploy (Render)
 
-1. Web Service a partir do repositório, branch `main`, runtime **Docker** (o `Dockerfile` traz ffmpeg e
-   tzdata). O plano Free serve.
+1. Web Service a partir do repositório, branch `develop`, runtime **Docker** (o `Dockerfile` traz ffmpeg e
+   tzdata). O plano Free serve. Health Check Path: `/api/health`.
 2. Cadastre as variáveis acima em *Environment*. O filesystem é efêmero, o que não importa: o app é stateless.
-3. **Auto-Deploy: "After CI Checks Pass".** O deploy só sai com o `ci` verde na `main`; com "On Commit"
-   ele sai mesmo com o CI vermelho.
+3. **Auto-Deploy: "After CI Checks Pass".** O deploy só sai com o `ci` verde na `develop`; com "On Commit"
+   ele sai mesmo com o CI vermelho, e ainda duplica: um deploy no merge e outro no commit do bump.
 4. Mantenha **uma instância só** (o plano Free já não escala além disso): duas gravariam prints
    duplicados no mesmo bucket.
 5. **No plano Free o serviço dorme após 15 min sem tráfego, e a captura para junto** (ela roda dentro do
