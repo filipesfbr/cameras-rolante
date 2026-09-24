@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  # Ferramenta manual: re-rodar o CI sem precisar de um push. Nenhum workflow chama este gatilho.
+  workflow_dispatch:
+
+# Cancelar runs antigas do mesmo PR/branch economiza minutos. O `event_name` entra no grupo porque
+# push e execução manual na MESMA branch são eventos diferentes e travavam um ao outro em vez de
+# um cancelar o outro.
+concurrency:
+  group: ci-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # O nome `ci` é o que o ruleset da main exige como check obrigatório: não renomear.
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      # Mesmo Node do Dockerfile.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      # Sem credenciais R2 de propósito: as páginas são force-dynamic (o build não lê o bucket) e
+      # o agendador de captura não sobe sem R2_ACCOUNT_ID. O CI nunca deve gravar no bucket real.
+      # Sem `--fix`/lint: o projeto não tem ESLint. Typecheck primeiro, é o passo mais barato.
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build

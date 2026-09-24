@@ -1,0 +1,98 @@
+name: Release on Main
+
+# Este workflow NÃO pode escrever em main: um push extra aqui gera um segundo
+# deploy. Aqui só lemos a versão já mergeada e tagueamos. O bump vive no bump.yml,
+# na develop.
+#
+# `workflow_dispatch` permite disparar o release na mão (re-run, ou depois de um
+# merge feito por automação: evento de push disparado por GITHUB_TOKEN NÃO cria run,
+# mas workflow_dispatch é a exceção prevista na doc).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Ler versão e checar tag
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+          # Caso sem bump no PR (hotfix direto em main, re-run do workflow):
+          # sem esta guarda o release seria recriado em cima de si mesmo.
+          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+            echo "Tag v$VERSION já existe — release ignorado"
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nova versão: v$VERSION"
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Criar Release
+        if: steps.version.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          name: v${{ steps.version.outputs.version }}
+          generate_release_notes: true
+          make_latest: true
+
+  sync-develop:
+    needs: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Configurar git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Sincronizar main -> develop
+        # O checkout não pode apontar direto pra develop: se a branch não existir
+        # (foi apagada ao mergear o PR de release, por exemplo), o job morre antes
+        # de conseguir recriá-la. Por isso checamos e recriamos aqui dentro.
+        run: |
+          set -euo pipefail
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+
+          if ! git ls-remote --exit-code --heads origin develop >/dev/null 2>&1; then
+            echo "::warning::A branch develop não existe — recriando a partir de main"
+            git push origin refs/remotes/origin/main:refs/heads/develop
+            exit 0
+          fi
+
+          git checkout -B develop origin/develop
+
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "develop já contém main — nada a fazer"
+            exit 0
+          fi
+
+          # Conflito aqui NÃO é resolvido no automático: o job falha e avisa.
+          git merge origin/main --no-edit -m "chore: sync main into develop"
+          git push origin develop

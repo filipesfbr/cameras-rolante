@@ -1,0 +1,102 @@
+name: Bump version on develop
+
+# O bump acontece NA DEVELOP, não no PR de release.
+#
+# Motivo: quando um workflow empurra um commit na branch de um PR usando o
+# GITHUB_TOKEN, o GitHub passa a exigir aprovação manual ("Approve and run") para
+# os workflows daquele PR (o PR de release ficaria com checks pendentes esperando
+# aprovação). Empurrando na develop, antes de existir o PR de release, o problema
+# não acontece.
+#
+# Regra: só bumpa quando a versão da develop é IGUAL à última tag — ou seja,
+# exatamente 1 bump por ciclo de release. Se a develop já está à frente (porque
+# já bumpou, ou porque alguém subiu a versão na mão no package.json), não mexe.
+#
+# Minor/major: decisão humana. Ou edite o `package.json` num PR (o workflow
+# respeita e não rebaixa), ou rode este workflow na mão com o input `kind`.
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: 'Salto de versão (padrão: patch)'
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bump-develop
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: develop
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Configurar git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump se necessário
+        env:
+          KIND: ${{ inputs.kind || 'patch' }}
+        run: |
+          set -euo pipefail
+          git fetch --tags --force
+
+          # So tags no formato vX.Y.Z contam: tag com sufixo (v1.2.0-beta.1) fazia o
+          # parser gerar "1.2.NaN" e o `npm version` falhar. A maior versao valida
+          # ganha, nao a tag mais proxima do historico.
+          LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname \
+            | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' \
+            | head -1 || true)
+          BASE_VERSION=${LATEST_TAG#v}
+          BASE_VERSION=${BASE_VERSION:-0.0.0}
+          HEAD_VERSION=$(node -p "require('./package.json').version")
+
+          echo "develop=$HEAD_VERSION | última tag=${LATEST_TAG:-nenhuma} | salto=$KIND"
+
+          NEXT_VERSION=$(node -e '
+            const [base, head, kind] = process.argv.slice(1);
+            const parse = (v) => v.split(".").map(Number);
+            const gt = (a, b) =>
+              a[0] > b[0] || (a[0] === b[0] && a[1] > b[1]) ||
+              (a[0] === b[0] && a[1] === b[1] && a[2] > b[2]);
+            const b = parse(base);
+            const h = parse(head);
+            const candidato =
+              kind === "major" ? [b[0] + 1, 0, 0] :
+              kind === "minor" ? [b[0], b[1] + 1, 0] :
+              [b[0], b[1], b[2] + 1];
+            console.log((gt(h, candidato) ? h : candidato).join("."));
+          ' "$BASE_VERSION" "$HEAD_VERSION" "$KIND")
+
+          if [ "$NEXT_VERSION" = "$HEAD_VERSION" ]; then
+            echo "Sem bump: develop já está em $HEAD_VERSION"
+            exit 0
+          fi
+
+          echo "Bumpando $HEAD_VERSION -> $NEXT_VERSION"
+          npm version "$NEXT_VERSION" --no-git-tag-version
+          git add package.json
+          if [ -f package-lock.json ]; then
+            git add package-lock.json
+          fi
+          git commit -m "chore: bump version to $NEXT_VERSION"
+          git push origin develop
