@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { moveCameraIn, type Camera } from './config.ts';
 import { isPrivateIp } from './ssrf.ts';
 import { checkToken, makeToken, samePassword } from './session.ts';
 import { page } from './storage.ts';
@@ -37,6 +38,15 @@ test('page: before atravessa a virada de dia sem buraco nem repetição, e para 
 test('page: after devolve só os mais novos, já do mais novo pro mais antigo', async () => {
   assert.deepEqual(ids(await page(deps, { limit: 10, after: cursorOf('2026-09-22', '230000') })), ['23-03', '23-02', '23-01']);
   assert.deepEqual(await page(deps, { limit: 10, after: cursorOf('2026-09-23', '030000') }), []);
+});
+
+test('moveCameraIn troca com a vizinha e devolve o mesmo array nas pontas', () => {
+  const cs = [{ id: 'a' }, { id: 'b' }, { id: 'c' }] as Camera[];
+  assert.deepEqual(moveCameraIn(cs, 'b', -1).map((c) => c.id), ['b', 'a', 'c']);
+  assert.deepEqual(moveCameraIn(cs, 'b', 1).map((c) => c.id), ['a', 'c', 'b']);
+  assert.equal(moveCameraIn(cs, 'a', -1), cs);
+  assert.equal(moveCameraIn(cs, 'c', 1), cs);
+  assert.equal(moveCameraIn(cs, 'x', 1), cs);
 });
 
 test('ssrf: bloqueia loopback, rede privada, link-local e v4-mapeado', () => {

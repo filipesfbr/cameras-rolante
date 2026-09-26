@@ -110,17 +110,15 @@ export default function CameraCard({ cam, historyBatch, onOpenLive, onOpenFrame 
           >
             <Icon d={REFRESH} />
           </button>
-          {cam.captureEnabled && (
-            <button
-              className={`${s.iconBtn} ${historyOpen ? s.iconActive : ''}`}
-              onClick={() => setHistoryOpen((o) => !o)}
-              title={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
-              aria-label={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
-              aria-pressed={historyOpen}
-            >
-              <Icon d={HISTORY} />
-            </button>
-          )}
+          <button
+            className={`${s.iconBtn} ${historyOpen ? s.iconActive : ''}`}
+            onClick={() => setHistoryOpen((o) => !o)}
+            title={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
+            aria-label={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
+            aria-pressed={historyOpen}
+          >
+            <Icon d={HISTORY} />
+          </button>
         </div>
       </div>
 

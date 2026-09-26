@@ -59,6 +59,24 @@ export async function list(prefix: string, delimiter?: string) {
   return { keys, prefixes };
 }
 
+/** Soma tamanho, objetos e prints (.jpg sem ser .thumb.jpg) do bucket inteiro; pagina sozinho. */
+export async function usage() {
+  let bytes = 0;
+  let count = 0;
+  let prints = 0;
+  let token: string | undefined;
+  do {
+    const r = await s3().send(new ListObjectsV2Command({ Bucket: Bucket(), ContinuationToken: token }));
+    for (const o of r.Contents ?? []) {
+      bytes += o.Size ?? 0;
+      count++;
+      if (o.Key?.endsWith('.jpg') && !o.Key.endsWith('.thumb.jpg')) prints++;
+    }
+    token = r.NextContinuationToken;
+  } while (token);
+  return { bytes, count, prints };
+}
+
 export async function del(keys: string[]) {
   for (let i = 0; i < keys.length; i += 1000) {
     const r = await s3().send(

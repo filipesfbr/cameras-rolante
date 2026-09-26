@@ -1,4 +1,4 @@
-import { del, list, publicUrl } from './r2.ts';
+import { del, list, publicUrl, usage } from './r2.ts';
 import { memo, state } from './state.ts';
 import { cursorOf, isDay, parseCursor, stamp } from './time.ts';
 
@@ -9,7 +9,7 @@ export const shotKey = (cam: string, day: string, t: string, thumb = false) =>
 
 export type Frame = { id: string; day: string; t: string; thumb: string; full: string };
 
-const toFrame = (cam: string, day: string, t: string): Frame => ({
+export const frameOf = (cam: string, day: string, t: string): Frame => ({
   id: cursorOf(day, t),
   day,
   t,
@@ -73,7 +73,11 @@ export async function page(
 export async function frames(cam: string, o: { before?: string | null; after?: string | null; limit: number }) {
   const ds = await days(cam);
   const found = await page({ days: ds, dayTimes: (d) => dayTimes(cam, d) }, o);
-  return found.map((f) => toFrame(cam, f.day, f.t));
+  return found.map((f) => frameOf(cam, f.day, f.t));
+}
+
+export async function framesOfDay(cam: string, day: string) {
+  return (await dayTimes(cam, day)).map((t) => frameOf(cam, day, t));
 }
 
 const forget = () => state.memo.clear();
@@ -119,3 +123,17 @@ export async function deleteRange(cam: string, from: string, to: string) {
   forget();
   return keys.length;
 }
+
+const FIRST_DAY = '0000-01-01';
+const LAST_DAY = '9999-12-31';
+
+export const countCamera = (cam: string) => countRange(cam, FIRST_DAY, LAST_DAY);
+export const deleteCamera = (cam: string) => deleteRange(cam, FIRST_DAY, LAST_DAY);
+
+const USAGE_TTL = 10 * 60_000;
+
+export const bucketUsage = () =>
+  memo('usage', USAGE_TTL, async () => {
+    const { bytes, count, prints } = await usage();
+    return { bytes, count, prints, at: Date.now() };
+  });

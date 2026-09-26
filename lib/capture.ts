@@ -64,6 +64,31 @@ export function testStream(streamUrl: string) {
   return withTmp(async (dir) => `data:image/jpeg;base64,${(await readFile(/*turbopackIgnore: true*/ (await shoot(streamUrl, dir)).full)).toString('base64')}`);
 }
 
+/** Captura e registra o status num lugar só (o agendador e o "Capturar agora" compartilham isto). */
+async function runCapture(id: string, cam: Camera) {
+  state.inFlight.add(id);
+  try {
+    const cursor = await grab(cam);
+    state.status.set(id, { at: Date.now(), ok: true });
+    return cursor;
+  } catch (e) {
+    state.status.set(id, { at: Date.now(), ok: false, error: (e as Error).message });
+    throw e;
+  } finally {
+    state.inFlight.delete(id);
+  }
+}
+
+export async function captureNow(id: string) {
+  const cfg = await readConfig();
+  const cam = cfg.cameras.find((c) => c.id === id);
+  if (!cam) throw new Error('câmera não encontrada');
+  if (state.inFlight.has(id)) throw new Error('já existe uma captura em andamento para esta câmera');
+  const cursor = await runCapture(id, cam);
+  arm(id, intervalOf(cfg, cam));
+  return cursor;
+}
+
 function arm(id: string, sec: number) {
   clearTimeout(state.timers.get(id));
   state.timers.set(id, setTimeout(() => tick(id), sec * 1000));
@@ -77,14 +102,7 @@ async function tick(id: string) {
     const cam = cfg.cameras.find((c) => c.id === id);
     if (!cam) return void state.timers.delete(id); // removida no admin
     next = intervalOf(cfg, cam);
-    if (cfg.captureEnabled && cam.captureEnabled && !state.inFlight.has(id)) {
-      state.inFlight.add(id);
-      try {
-        await grab(cam);
-      } finally {
-        state.inFlight.delete(id);
-      }
-    }
+    if (cfg.captureEnabled && cam.captureEnabled && !state.inFlight.has(id)) await runCapture(id, cam);
   } catch (e) {
     log(`${id}: ${(e as Error).message}`);
   }

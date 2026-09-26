@@ -8,7 +8,7 @@ export type Camera = {
   streamUrl: string;
   sourceUrl?: string;
   active: boolean; // aparece na página pública
-  captureEnabled: boolean; // "Histórico: ligado" no admin
+  captureEnabled: boolean; // "Gravar prints" no admin
   intervalSec?: number; // sobrescreve o global
 };
 
@@ -17,6 +17,7 @@ export type Config = {
   intervalSec: number; // padrão global
   historyBatch: number; // 4–48, lote inicial da faixa
   retentionDays: number;
+  notice?: string;
   cameras: Camera[];
 };
 
@@ -50,6 +51,15 @@ const DEFAULTS: Config = {
 };
 
 export const intervalOf = (cfg: Config, cam: Camera) => cam.intervalSec ?? cfg.intervalSec;
+
+export function moveCameraIn(cameras: Camera[], id: string, dir: -1 | 1): Camera[] {
+  const i = cameras.findIndex((c) => c.id === id);
+  const j = i + dir;
+  if (i < 0 || j < 0 || j >= cameras.length) return cameras;
+  const out = [...cameras];
+  [out[i], out[j]] = [out[j], out[i]];
+  return out;
+}
 
 export async function readConfig(): Promise<Config> {
   if (state.config) return state.config;

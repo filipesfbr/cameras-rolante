@@ -14,7 +14,6 @@ export type PublicCamera = {
   location: string;
   streamUrl: string;
   sourceUrl?: string;
-  captureEnabled: boolean;
   intervalSec: number;
 };
 
@@ -23,7 +22,7 @@ type OverlayState = { title: string; live?: string; frame?: string } | null;
 const titleOf = (c: PublicCamera) => `${c.location} — ${c.name}`;
 const when = (f: Frame) => `${f.day.slice(8)}/${f.day.slice(5, 7)}/${f.day.slice(0, 4)} ${f.t.slice(0, 2)}:${f.t.slice(2, 4)}:${f.t.slice(4)}`;
 
-export default function CamerasApp({ cameras, historyBatch }: { cameras: PublicCamera[]; historyBatch: number }) {
+export default function CamerasApp({ cameras, historyBatch, notice }: { cameras: PublicCamera[]; historyBatch: number; notice?: string }) {
   const [overlay, setOverlay] = useState<OverlayState>(null);
   const [grid, setGrid] = useState(false);
   // câmeras o maior possível: 1–3 lado a lado ocupando a largura toda; a partir de 4, ~quadrado (4→2, 5–9→3)
@@ -66,11 +65,17 @@ export default function CamerasApp({ cameras, historyBatch }: { cameras: PublicC
         </div>
       </header>
 
+      {notice && (
+        <div className={s.notice} role="status">
+          {notice}
+        </div>
+      )}
+
       <main className={s.main}>
         {cameras.length === 0 ? (
           <p className={s.empty}>Nenhuma câmera ativa no momento.</p>
         ) : (
-          <div className={s.columns} style={{ '--cols': cols } as React.CSSProperties}>
+          <div className={`${s.columns} ${cameras.length === 1 ? s.solo : ''}`} style={{ '--cols': cols } as React.CSSProperties}>
             {cameras.map((c) => (
               <CameraCard
                 key={c.id}
