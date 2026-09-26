@@ -1,11 +1,14 @@
 import type { Config } from './config.ts';
 
+export type CaptureStatus = { at: number; ok: boolean; error?: string };
+
 // O Next compila instrumentation.ts e as rotas/actions em bundles separados: estado em módulo
 // não é compartilhado entre eles. Em globalThis, o agendador e o admin enxergam os mesmos timers.
 type State = {
   config?: Config;
   timers: Map<string, ReturnType<typeof setTimeout>>;
   inFlight: Set<string>;
+  status: Map<string, CaptureStatus>;
   memo: Map<string, { at: number; v: unknown }>;
   started: boolean;
   gen: number; // sobe a cada rescheduleAll: ticks antigos não rearmam o timer
@@ -16,6 +19,7 @@ const g = globalThis as unknown as { __cameras?: State };
 export const state: State = (g.__cameras ??= {
   timers: new Map(),
   inFlight: new Set(),
+  status: new Map(),
   memo: new Map(),
   started: false,
   gen: 0,

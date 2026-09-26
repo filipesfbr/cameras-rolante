@@ -14,13 +14,12 @@ export default async function Home() {
       location: c.location,
       streamUrl: c.streamUrl,
       sourceUrl: c.sourceUrl,
-      captureEnabled: c.captureEnabled,
       intervalSec: intervalOf(cfg, c),
     }));
 
   return (
     <div className={s.root}>
-      <CamerasApp cameras={cameras} historyBatch={cfg.historyBatch} />
+      <CamerasApp cameras={cameras} historyBatch={cfg.historyBatch} notice={cfg.notice} />
       <footer className={s.footer}>
         As imagens são exibidas através do portal{' '}
         <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">

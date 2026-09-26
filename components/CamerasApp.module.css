@@ -38,6 +38,14 @@
   justify-content: center;
   cursor: pointer;
 }
+.notice {
+  background: var(--bad-bg);
+  color: var(--text-strong);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 32px;
+  font-size: 13px;
+  text-align: center;
+}
 .main {
   padding: 20px;
   flex: 1;
@@ -47,14 +55,21 @@
   column-width: 380px; /* piso: em tela estreita cai pra menos colunas (mobile = 1) */
   column-gap: 16px;
 }
+.solo {
+  /* 1 câmera: limita a largura pelo que cabe em 60vh de vídeo, para os prints ficarem visíveis embaixo */
+  max-width: min(100%, calc(60vh * 16 / 9));
+  margin-inline: auto;
+}
 .empty {
   color: var(--muted-1);
   font-size: 14px;
 }
 
 @media (max-width: 600px) {
-  .header {
-    padding: 16px;
+  .header,
+  .notice {
+    padding-left: 16px;
+    padding-right: 16px;
   }
   .main {
     padding: 12px;
