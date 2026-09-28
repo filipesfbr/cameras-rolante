@@ -12,10 +12,10 @@ import { stamp } from './time.ts';
 const IMMUTABLE = 'public, max-age=31536000, immutable'; // um quadro nunca muda
 const log = (m: string) => console.error(`[captura] ${m}`);
 
-function ffmpeg(args: string[]) {
+export function runFfmpeg(args: string[], spawnFn: typeof spawn = spawn) {
   return new Promise<void>((resolve, reject) => {
     // câmera fora do ar não trava o ciclo dela nem o das outras: kill em 30s
-    const p = spawn('ffmpeg', args, { stdio: ['ignore', 'ignore', 'pipe'], timeout: 30_000, killSignal: 'SIGKILL' });
+    const p = spawnFn('ffmpeg', args, { stdio: ['ignore', 'ignore', 'pipe'], timeout: 30_000, killSignal: 'SIGKILL' });
     let err = '';
     p.stderr.on('data', (d) => (err = (err + d).slice(-2000)));
     p.on('error', reject);
@@ -25,10 +25,13 @@ function ffmpeg(args: string[]) {
   });
 }
 
+type StreamIo = { assertPublicUrl: typeof assertPublicUrl; ffmpeg: typeof runFfmpeg };
+const defaultStreamIo: StreamIo = { assertPublicUrl, ffmpeg: runFfmpeg };
+
 /** Uma chamada gera o full (1280px) e a thumb (320px). Sem browser: o ffmpeg puxa o frame direto do m3u8. */
-async function shoot(streamUrl: string, dir: string) {
-  await assertPublicUrl(streamUrl);
-  await ffmpeg([
+async function shoot(streamUrl: string, dir: string, io: StreamIo = defaultStreamIo) {
+  await io.assertPublicUrl(streamUrl);
+  await io.ffmpeg([
     '-nostdin', '-loglevel', 'error', '-y',
     '-protocol_whitelist', 'http,https,tcp,tls,crypto', // playlist remota não lê file:// nem nada além de http(s)
     '-i', streamUrl,
@@ -48,27 +51,31 @@ async function withTmp<T>(fn: (dir: string) => Promise<T>) {
   }
 }
 
+export type Shoot = (streamUrl: string, dir: string) => Promise<{ full: string; thumb: string }>;
+export type GrabIo = { shoot: Shoot; put: typeof put };
+const defaultGrabIo: GrabIo = { shoot, put };
+
 /** Captura, sobe pro R2 e apaga o local. Devolve o cursor do quadro. */
-export function grab(cam: Camera) {
+export function grab(cam: Camera, io: GrabIo = defaultGrabIo) {
   return withTmp(async (dir) => {
-    const f = await shoot(cam.streamUrl, dir);
+    const f = await io.shoot(cam.streamUrl, dir);
     const { day, t } = stamp();
-    await put(shotKey(cam.id, day, t), await readFile(/*turbopackIgnore: true*/ f.full), 'image/jpeg', IMMUTABLE);
-    await put(shotKey(cam.id, day, t, true), await readFile(/*turbopackIgnore: true*/ f.thumb), 'image/jpeg', IMMUTABLE); // thumb por último
+    await io.put(shotKey(cam.id, day, t), await readFile(/*turbopackIgnore: true*/ f.full), 'image/jpeg', IMMUTABLE);
+    await io.put(shotKey(cam.id, day, t, true), await readFile(/*turbopackIgnore: true*/ f.thumb), 'image/jpeg', IMMUTABLE); // thumb por último
     return `${day}T${t}`;
   });
 }
 
 /** "Testar câmera" do admin: mesmo caminho do grab, sem gravar no R2. Devolve o frame como data URL. */
-export function testStream(streamUrl: string) {
-  return withTmp(async (dir) => `data:image/jpeg;base64,${(await readFile(/*turbopackIgnore: true*/ (await shoot(streamUrl, dir)).full)).toString('base64')}`);
+export function testStream(streamUrl: string, io: { shoot: Shoot } = defaultGrabIo) {
+  return withTmp(async (dir) => `data:image/jpeg;base64,${(await readFile(/*turbopackIgnore: true*/ (await io.shoot(streamUrl, dir)).full)).toString('base64')}`);
 }
 
 /** Captura e registra o status num lugar só (o agendador e o "Capturar agora" compartilham isto). */
-async function runCapture(id: string, cam: Camera) {
+async function runCapture(id: string, cam: Camera, io: GrabIo = defaultGrabIo) {
   state.inFlight.add(id);
   try {
-    const cursor = await grab(cam);
+    const cursor = await grab(cam, io);
     state.status.set(id, { at: Date.now(), ok: true });
     return cursor;
   } catch (e) {
@@ -79,12 +86,12 @@ async function runCapture(id: string, cam: Camera) {
   }
 }
 
-export async function captureNow(id: string) {
+export async function captureNow(id: string, io: GrabIo = defaultGrabIo) {
   const cfg = await readConfig();
   const cam = cfg.cameras.find((c) => c.id === id);
   if (!cam) throw new Error('câmera não encontrada');
   if (state.inFlight.has(id)) throw new Error('já existe uma captura em andamento para esta câmera');
-  const cursor = await runCapture(id, cam);
+  const cursor = await runCapture(id, cam, io);
   arm(id, intervalOf(cfg, cam));
   return cursor;
 }
@@ -94,7 +101,7 @@ function arm(id: string, sec: number) {
   state.timers.set(id, setTimeout(() => tick(id), sec * 1000));
 }
 
-async function tick(id: string) {
+export async function tick(id: string, io: GrabIo = defaultGrabIo) {
   const gen = state.gen;
   let next = 900;
   try {
@@ -102,7 +109,7 @@ async function tick(id: string) {
     const cam = cfg.cameras.find((c) => c.id === id);
     if (!cam) return void state.timers.delete(id); // removida no admin
     next = intervalOf(cfg, cam);
-    if (cfg.captureEnabled && cam.captureEnabled && !state.inFlight.has(id)) await runCapture(id, cam);
+    if (cfg.captureEnabled && cam.captureEnabled && !state.inFlight.has(id)) await runCapture(id, cam, io);
   } catch (e) {
     log(`${id}: ${(e as Error).message}`);
   }
