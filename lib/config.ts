@@ -23,7 +23,7 @@ export type Config = {
 
 export const INTERVALS = [300, 900, 1800, 3600];
 
-const DEFAULTS: Config = {
+export const DEFAULTS: Config = {
   captureEnabled: true,
   intervalSec: 900,
   historyBatch: 12,
@@ -61,16 +61,24 @@ export function moveCameraIn(cameras: Camera[], id: string, dir: -1 | 1): Camera
   return out;
 }
 
-export async function readConfig(): Promise<Config> {
+/** Config do bucket mesclada com os defaults; null quando o objeto ainda não existe. */
+export function mergeConfig(raw: string | null): Config | null {
+  return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : null;
+}
+
+type ConfigIo = { getText: typeof getText; put: typeof put };
+const defaultIo: ConfigIo = { getText, put };
+
+export async function readConfig(io: ConfigIo = defaultIo): Promise<Config> {
   if (state.config) return state.config;
-  const raw = await getText('config.json');
-  if (raw) return (state.config = { ...DEFAULTS, ...JSON.parse(raw) });
-  await saveConfig(DEFAULTS); // primeiro boot: grava os padrões
+  const cfg = mergeConfig(await io.getText('config.json'));
+  if (cfg) return (state.config = cfg);
+  await saveConfig(DEFAULTS, io); // primeiro boot: grava os padrões
   return DEFAULTS;
 }
 
 /** PutObject troca o objeto inteiro de forma atômica; o cache só é atualizado depois do put. */
-export async function saveConfig(cfg: Config) {
-  await put('config.json', JSON.stringify(cfg, null, 2), 'application/json', 'no-cache');
+export async function saveConfig(cfg: Config, io: ConfigIo = defaultIo) {
+  await io.put('config.json', JSON.stringify(cfg, null, 2), 'application/json', 'no-cache');
   state.config = cfg;
 }

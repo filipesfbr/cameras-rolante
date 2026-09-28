@@ -14,8 +14,11 @@ export const isPrivateIp = (ip: string) => {
   return v === 0 || blocked.check(ip, v === 6 ? 'ipv6' : 'ipv4');
 };
 
+export type Resolve = (host: string) => Promise<{ address: string }[]>;
+const lookupAll: Resolve = (host) => lookup(host, { all: true });
+
 /** Exige https e host que resolva só pra endereço público. O ffmpeg vai buscar essa URL de dentro da VPS. */
-export async function assertPublicUrl(raw: string) {
+export async function assertPublicUrl(raw: string, resolve: Resolve = lookupAll) {
   let u: URL;
   try {
     u = new URL(raw);
@@ -26,7 +29,7 @@ export async function assertPublicUrl(raw: string) {
   const host = u.hostname.replace(/^\[|\]$/g, '');
   let addrs: string[];
   try {
-    addrs = isIP(host) ? [host] : (await lookup(host, { all: true })).map((a) => a.address);
+    addrs = isIP(host) ? [host] : (await resolve(host)).map((a) => a.address);
   } catch {
     throw new Error('host não encontrado');
   }
