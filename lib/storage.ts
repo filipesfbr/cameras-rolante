@@ -19,17 +19,20 @@ export const frameOf = (cam: string, day: string, t: string): Frame => ({
 
 const LIST_TTL = 20_000;
 
+export type StorageIo = { list: typeof list; del: typeof del; usage: typeof usage };
+const defaultIo: StorageIo = { list, del, usage };
+
 /** dias existentes da câmera, em ordem crescente */
-export const days = (cam: string) =>
+export const days = (cam: string, io: StorageIo = defaultIo) =>
   memo(`days:${cam}`, LIST_TTL, async () => {
-    const { prefixes } = await list(`shots/${cam}/`, '/');
+    const { prefixes } = await io.list(`shots/${cam}/`, '/');
     return prefixes.map((p) => p.split('/')[2]).filter(isDay).sort();
   });
 
 /** horários (HHmmss) com thumb no dia, em ordem crescente. O thumb sobe por último: se está listado, o full existe. */
-export const dayTimes = (cam: string, day: string) =>
+export const dayTimes = (cam: string, day: string, io: StorageIo = defaultIo) =>
   memo(`day:${cam}:${day}`, LIST_TTL, async () => {
-    const { keys } = await list(`shots/${cam}/${day}/`);
+    const { keys } = await io.list(`shots/${cam}/${day}/`);
     return keys
       .map((k) => k.split('/').pop()!)
       .filter((f) => f.endsWith('.thumb.jpg'))
@@ -70,31 +73,31 @@ export async function page(
   return out;
 }
 
-export async function frames(cam: string, o: { before?: string | null; after?: string | null; limit: number }) {
-  const ds = await days(cam);
-  const found = await page({ days: ds, dayTimes: (d) => dayTimes(cam, d) }, o);
+export async function frames(cam: string, o: { before?: string | null; after?: string | null; limit: number }, io: StorageIo = defaultIo) {
+  const ds = await days(cam, io);
+  const found = await page({ days: ds, dayTimes: (d) => dayTimes(cam, d, io) }, o);
   return found.map((f) => frameOf(cam, f.day, f.t));
 }
 
-export async function framesOfDay(cam: string, day: string) {
-  return (await dayTimes(cam, day)).map((t) => frameOf(cam, day, t));
+export async function framesOfDay(cam: string, day: string, io: StorageIo = defaultIo) {
+  return (await dayTimes(cam, day, io)).map((t) => frameOf(cam, day, t));
 }
 
 const forget = () => state.memo.clear();
 
 /** Varredura de retenção: apaga todo dia anterior a (hoje − retentionDays), inclusive de câmeras já removidas. */
-export async function sweep(retentionDays: number) {
+export async function sweep(retentionDays: number, io: StorageIo = defaultIo) {
   const cutoff = stamp(new Date(Date.now() - retentionDays * 86_400_000)).day;
-  const { prefixes: cams } = await list('shots/', '/');
+  const { prefixes: cams } = await io.list('shots/', '/');
   let removed = 0;
   for (const c of cams) {
     const cam = c.split('/')[1];
-    const { prefixes } = await list(`shots/${cam}/`, '/');
+    const { prefixes } = await io.list(`shots/${cam}/`, '/');
     for (const p of prefixes) {
       const day = p.split('/')[2];
       if (!isDay(day) || day >= cutoff) continue;
-      const { keys } = await list(p);
-      await del(keys);
+      const { keys } = await io.list(p);
+      await io.del(keys);
       removed += keys.length;
     }
   }
@@ -102,24 +105,24 @@ export async function sweep(retentionDays: number) {
   return removed;
 }
 
-async function rangeKeys(cam: string, from: string, to: string) {
+async function rangeKeys(cam: string, from: string, to: string, io: StorageIo) {
   const out: string[] = [];
-  for (const d of await days(cam)) {
+  for (const d of await days(cam, io)) {
     if (d < from || d > to) continue;
-    out.push(...(await list(`shots/${cam}/${d}/`)).keys);
+    out.push(...(await io.list(`shots/${cam}/${d}/`)).keys);
   }
   return out;
 }
 
-export async function countRange(cam: string, from: string, to: string) {
+export async function countRange(cam: string, from: string, to: string, io: StorageIo = defaultIo) {
   forget();
-  return (await rangeKeys(cam, from, to)).length;
+  return (await rangeKeys(cam, from, to, io)).length;
 }
 
-export async function deleteRange(cam: string, from: string, to: string) {
+export async function deleteRange(cam: string, from: string, to: string, io: StorageIo = defaultIo) {
   forget();
-  const keys = await rangeKeys(cam, from, to);
-  await del(keys);
+  const keys = await rangeKeys(cam, from, to, io);
+  await io.del(keys);
   forget();
   return keys.length;
 }
@@ -127,13 +130,13 @@ export async function deleteRange(cam: string, from: string, to: string) {
 const FIRST_DAY = '0000-01-01';
 const LAST_DAY = '9999-12-31';
 
-export const countCamera = (cam: string) => countRange(cam, FIRST_DAY, LAST_DAY);
-export const deleteCamera = (cam: string) => deleteRange(cam, FIRST_DAY, LAST_DAY);
+export const countCamera = (cam: string, io: StorageIo = defaultIo) => countRange(cam, FIRST_DAY, LAST_DAY, io);
+export const deleteCamera = (cam: string, io: StorageIo = defaultIo) => deleteRange(cam, FIRST_DAY, LAST_DAY, io);
 
 const USAGE_TTL = 10 * 60_000;
 
-export const bucketUsage = () =>
+export const bucketUsage = (io: StorageIo = defaultIo) =>
   memo('usage', USAGE_TTL, async () => {
-    const { bytes, count, prints } = await usage();
+    const { bytes, count, prints } = await io.usage();
     return { bytes, count, prints, at: Date.now() };
   });

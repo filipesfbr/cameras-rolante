@@ -6,9 +6,12 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 
+export type S3ClientLike = Pick<S3Client, 'send'>;
+
 let client: S3Client | undefined;
 
-function s3() {
+function s3(io?: S3ClientLike): S3ClientLike {
+  if (io) return io;
   // o R2 não implementa parte dos checksums x-amz-checksum-* que o SDK v3 manda por padrão
   return (client ??= new S3Client({
     region: 'auto',
@@ -26,16 +29,16 @@ const Bucket = () => process.env.R2_BUCKET ?? '';
 
 export const publicUrl = (key: string) => `${process.env.R2_PUBLIC_URL}/${key}`;
 
-export async function put(key: string, body: Buffer | string, contentType: string, cacheControl?: string) {
-  await s3().send(
+export async function put(key: string, body: Buffer | string, contentType: string, cacheControl?: string, io?: S3ClientLike) {
+  await s3(io).send(
     new PutObjectCommand({ Bucket: Bucket(), Key: key, Body: body, ContentType: contentType, CacheControl: cacheControl }),
   );
 }
 
 /** null se o objeto não existe */
-export async function getText(key: string): Promise<string | null> {
+export async function getText(key: string, io?: S3ClientLike): Promise<string | null> {
   try {
-    const r = await s3().send(new GetObjectCommand({ Bucket: Bucket(), Key: key }));
+    const r = await s3(io).send(new GetObjectCommand({ Bucket: Bucket(), Key: key }));
     return (await r.Body?.transformToString()) ?? null;
   } catch (e) {
     if ((e as { name?: string }).name === 'NoSuchKey') return null;
@@ -44,12 +47,12 @@ export async function getText(key: string): Promise<string | null> {
 }
 
 /** Lista tudo sob o prefixo (pagina sozinho). Com delimiter '/', `prefixes` traz as "subpastas". */
-export async function list(prefix: string, delimiter?: string) {
+export async function list(prefix: string, delimiter?: string, io?: S3ClientLike) {
   const keys: string[] = [];
   const prefixes: string[] = [];
   let token: string | undefined;
   do {
-    const r = await s3().send(
+    const r = await s3(io).send(
       new ListObjectsV2Command({ Bucket: Bucket(), Prefix: prefix, Delimiter: delimiter, ContinuationToken: token }),
     );
     for (const o of r.Contents ?? []) if (o.Key) keys.push(o.Key);
@@ -60,13 +63,13 @@ export async function list(prefix: string, delimiter?: string) {
 }
 
 /** Soma tamanho, objetos e prints (.jpg sem ser .thumb.jpg) do bucket inteiro; pagina sozinho. */
-export async function usage() {
+export async function usage(io?: S3ClientLike) {
   let bytes = 0;
   let count = 0;
   let prints = 0;
   let token: string | undefined;
   do {
-    const r = await s3().send(new ListObjectsV2Command({ Bucket: Bucket(), ContinuationToken: token }));
+    const r = await s3(io).send(new ListObjectsV2Command({ Bucket: Bucket(), ContinuationToken: token }));
     for (const o of r.Contents ?? []) {
       bytes += o.Size ?? 0;
       count++;
@@ -77,9 +80,9 @@ export async function usage() {
   return { bytes, count, prints };
 }
 
-export async function del(keys: string[]) {
+export async function del(keys: string[], io?: S3ClientLike) {
   for (let i = 0; i < keys.length; i += 1000) {
-    const r = await s3().send(
+    const r = await s3(io).send(
       new DeleteObjectsCommand({
         Bucket: Bucket(),
         Delete: { Objects: keys.slice(i, i + 1000).map((Key) => ({ Key })), Quiet: true },
