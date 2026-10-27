@@ -1,11 +1,11 @@
 .panel {
-  background: var(--bg-history);
-  border-top: 1px solid var(--border-soft);
+  background: var(--bg);
+  border-top: 1px solid var(--rule-soft);
   padding: 16px;
 }
 .eyebrow {
   font-size: 11px;
-  color: var(--muted-2);
+  color: var(--body);
   font-weight: 600;
   margin-bottom: 12px;
   letter-spacing: 1px;
@@ -15,9 +15,9 @@
   gap: 10px;
 }
 .news {
-  background: var(--accent-bg);
-  color: var(--accent-text);
-  border: 1px solid var(--accent-border);
+  background: var(--selection);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   border-radius: 10px;
   padding: 2px 8px;
   font-size: 10px;
@@ -27,14 +27,14 @@
 }
 .hint {
   font-size: 12px;
-  color: var(--muted-3);
+  color: var(--body);
   padding: 8px 0;
 }
 .retry {
   background: none;
   border: none;
   padding: 0;
-  color: var(--link);
+  color: var(--accent);
   cursor: pointer;
   font-size: inherit;
 }
@@ -44,7 +44,7 @@
   overflow-x: auto;
   padding-bottom: 4px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  scrollbar-color: var(--chip-border) transparent;
 }
 .strip::-webkit-scrollbar {
   height: 6px;
@@ -53,7 +53,7 @@
   background: transparent;
 }
 .strip::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
+  background: var(--chip-border);
   border-radius: 3px;
 }
 .item {
@@ -70,9 +70,9 @@
   display: block;
   height: 64px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--rule);
   overflow: hidden;
-  background: repeating-linear-gradient(45deg, #1e2025, #1e2025 6px, #181a1e 6px, #181a1e 12px); /* aparece enquanto a imagem carrega */
+  background: var(--image-bg); /* aparece enquanto a imagem carrega */
 }
 .thumb img {
   width: 100%;
@@ -81,14 +81,14 @@
   display: block;
 }
 .item:hover .thumb {
-  border-color: var(--accent-border);
+  border-color: var(--accent);
 }
 .selected .thumb {
   border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  outline: 1px solid var(--accent);
 }
 .selected .time {
-  color: var(--accent-text);
+  color: var(--accent);
 }
 .day {
   position: absolute;
@@ -96,7 +96,7 @@
   left: 4px;
   background: rgba(0, 0, 0, 0.65);
   color: #d5d8de;
-  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: 9px;
   padding: 1px 4px;
   border-radius: 4px;
@@ -104,8 +104,8 @@
 .time {
   display: block;
   font-size: 10px;
-  color: var(--muted-3);
-  font-family: var(--font-mono);
+  color: var(--body);
+  font-variant-numeric: tabular-nums;
   text-align: center;
   margin-top: 6px;
   letter-spacing: 0.3px;

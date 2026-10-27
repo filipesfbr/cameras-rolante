@@ -7,10 +7,10 @@
   display: flex;
   flex-direction: column;
   padding: 0;
-  border: 1px solid var(--border);
+  border: 1px solid var(--rule);
   border-radius: 8px;
   overflow: hidden;
-  background: var(--bg-history);
+  background: var(--bg);
   cursor: zoom-in;
 }
 .thumb:hover {
@@ -24,8 +24,8 @@
 }
 .time {
   font-size: 13px;
-  color: var(--muted-1);
-  font-family: var(--font-mono);
+  color: var(--body);
+  font-variant-numeric: tabular-nums;
   padding: 5px 0;
   text-align: center;
 }
