@@ -1,18 +1,24 @@
-import type { Metadata } from 'next';
-import { Space_Grotesk, Space_Mono } from 'next/font/google';
+import type { Metadata, Viewport } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
 
-const grotesk = Space_Grotesk({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-space-grotesk', display: 'swap' });
-const mono = Space_Mono({ subsets: ['latin'], weight: ['400', '700'], variable: '--font-space-mono', display: 'swap' });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-inter', display: 'swap' });
+
+const title = 'Câmeras dos Rios - Rolante';
+const description = 'Câmeras de monitoramento dos rios de Rolante/RS, ao vivo e com histórico.';
 
 export const metadata: Metadata = {
-  title: 'Câmeras dos Rios - Rolante',
-  description: 'Câmeras de monitoramento dos rios de Rolante/RS, ao vivo e com histórico.',
+  metadataBase: new URL('https://cameras-rolante.onrender.com'), // og:image precisa de URL absoluta
+  title,
+  description,
+  openGraph: { title, description },
 };
+
+export const viewport: Viewport = { themeColor: '#faf8f4' };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR" className={`${grotesk.variable} ${mono.variable}`}>
+    <html lang="pt-BR" className={inter.variable}>
       <body>{children}</body>
     </html>
   );

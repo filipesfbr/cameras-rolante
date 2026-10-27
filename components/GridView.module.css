@@ -1,7 +1,7 @@
 .root {
   position: fixed;
   inset: 0;
-  background: #000;
+  background: var(--ink);
   z-index: 1000;
 }
 .close {
@@ -10,7 +10,7 @@
   right: 16px;
   z-index: 1001;
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: var(--card);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
   width: 36px;
@@ -20,6 +20,10 @@
   justify-content: center;
   cursor: pointer;
   font-size: 16px;
+}
+.close:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .grid {
   width: 100%;
@@ -34,7 +38,7 @@
   width: calc((100% - (var(--cols) - 1) * 2px) / var(--cols));
   height: calc((100% - (var(--rows) - 1) * 2px) / var(--rows));
   object-fit: contain; /* nunca corta a imagem */
-  background: #000;
+  background: var(--ink);
 }
 
 /* retrato (celular em pé): uma câmera embaixo da outra, na largura toda; se passar da tela, rola */

@@ -21,17 +21,19 @@ export default async function Home() {
     <div className={s.root}>
       <CamerasApp cameras={cameras} historyBatch={cfg.historyBatch} notice={cfg.notice} />
       <footer className={s.footer}>
-        As imagens são exibidas através do portal{' '}
-        <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">
-          alerta.rolante.ifrs.edu.br
-        </a>{' '}
-        e das páginas de câmera em{' '}
-        <a href="https://rolante.solutti.net/rioareia/" target="_blank" rel="noopener">
-          rolante.solutti.net
-        </a>
-        .<br />
-        Este site não é responsável pelo conteúdo, disponibilidade ou propriedade das câmeras.<br />
-        O horário dos prints é o de Brasília e pode diferir do relógio impresso na imagem da câmera.
+        <p>
+          As imagens são exibidas através do portal{' '}
+          <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">
+            alerta.rolante.ifrs.edu.br
+          </a>{' '}
+          e das páginas de câmera em{' '}
+          <a href="https://rolante.solutti.net/rioareia/" target="_blank" rel="noopener">
+            rolante.solutti.net
+          </a>
+          .<br />
+          Este site não é responsável pelo conteúdo, disponibilidade ou propriedade das câmeras.<br />
+          O horário dos prints é o de Brasília e pode diferir do relógio impresso na imagem da câmera.
+        </p>
       </footer>
     </div>
   );

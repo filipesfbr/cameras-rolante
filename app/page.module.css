@@ -5,11 +5,14 @@
 }
 
 .footer {
-  padding: 8px 24px;
-  font-size: 12px;
-  color: var(--muted-4);
-  background: var(--bg-bar);
-  border-top: 1px solid var(--border);
+  margin: 0 var(--gutter);
+  padding: 28px 0 40px;
+  border-top: 1px solid var(--rule);
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--muted);
   text-align: center;
-  line-height: 1.4;
+}
+.footer p {
+  margin: 0;
 }
