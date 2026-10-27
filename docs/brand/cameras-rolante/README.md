@@ -1,6 +1,6 @@
 # Handoff: cameras-rolante
 
-Aplicar a identidade da família Rolante (TransparêncIA, auditoria-rolante, Impostômetro Rolante) ao site **https://cameras-rolante.onrender.com/**. Só muda a camada visual. Nenhuma regra de negócio, busca de imagem, relógio ou link muda.
+Aplicar a identidade da família Rolante (TransparêncIA Rolante, auditoria-rolante, Impostômetro Rolante) ao site **https://cameras-rolante.onrender.com/**. Só muda a camada visual. Nenhuma regra de negócio, busca de imagem, relógio ou link muda.
 
 ## 1. O que o site tem hoje
 
