@@ -1,5 +1,10 @@
-/* paleta da família Rolante (docs/brand/cameras-rolante); um acento só, sem sombra nem gradiente */
+/* paleta da família Rolante (docs/brand/cameras-rolante); um acento só, sem sombra nem gradiente.
+   Tema: o layout põe data-theme no <html> pelo cookie `theme` (padrão escuro, igual ao escuro do Impostômetro Rolante). */
 :root {
+  /* fixas nos dois temas: fundo dos visualizadores de vídeo e texto sobre ele */
+  --tinta: #26221d;
+  --creme: #fbf4e9;
+
   --bg: #faf8f4;
   --ink: #26221d;
   --body: #5a534a;
@@ -11,6 +16,7 @@
   --chip-border: #e4ddd1;
   --image-bg: #f3ede2;
   --selection: #f0d9c4;
+  --brand-bg: #fbf4e9; /* preenchimento do símbolo */
 
   /* status ao vivo e mensagens do admin */
   --ok: #2f7d3a;
@@ -27,6 +33,31 @@
   --font-ui: var(--font-inter), system-ui, sans-serif;
 }
 
+/* escuro: fundo tinta, texto creme, acento âmbar (tokens.css do Impostômetro Rolante) */
+[data-theme='dark'] {
+  --bg: #26221d;
+  --ink: #fbf4e9;
+  --body: rgba(251, 244, 233, 0.72);
+  --muted: rgba(251, 244, 233, 0.45);
+  --accent: #d98a52;
+  --card: #312c27;
+  --rule: #403b35;
+  --rule-soft: #403b35;
+  --chip-border: #4d4740;
+  --image-bg: #403b35;
+  --selection: rgba(217, 138, 82, 0.35);
+  --brand-bg: #26221d;
+
+  --ok: #7cc488;
+  --bad: #f08b80;
+  --ok-bg: #2a3a2c;
+  --ok-border: #3f6145;
+  --bad-bg: #432825;
+  --bad-border: #74403a;
+  --warn: #e3a85e;
+  --warn-bg: #42331f;
+}
+
 @media (max-width: 760px) {
   :root {
     --gutter: 20px;
@@ -41,6 +72,9 @@
 html {
   scrollbar-gutter: stable;
   color-scheme: light;
+}
+html[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 body {
