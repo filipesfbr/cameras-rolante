@@ -18,12 +18,12 @@
 .media {
   max-width: 100%;
   max-height: 88vh;
-  background: var(--ink);
+  background: var(--tinta);
   border-radius: 8px;
   display: block;
 }
 .title {
   font-size: 13px;
-  color: var(--rule-soft);
+  color: var(--creme);
   text-align: center;
 }

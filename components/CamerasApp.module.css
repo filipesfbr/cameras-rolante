@@ -30,7 +30,7 @@
 }
 .title {
   margin: 0 0 16px;
-  font-size: 44px;
+  font-size: 34px;
   line-height: 1.1;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -64,6 +64,11 @@
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+/* botão de tema: mostra o sol no escuro (vai pro claro) e a lua no claro */
+:global([data-theme='dark']) .moon,
+:global([data-theme='light']) .sun {
+  display: none;
+}
 .notice {
   margin: 24px var(--gutter) 0;
   background: var(--bad-bg);
@@ -75,7 +80,7 @@
   text-align: center;
 }
 .main {
-  padding: 24px var(--gutter) 56px;
+  padding: 24px var(--gutter) 32px;
   flex: 1;
 }
 .columns {
@@ -95,6 +100,6 @@
 
 @media (max-width: 760px) {
   .title {
-    font-size: 31px;
+    font-size: 26px;
   }
 }

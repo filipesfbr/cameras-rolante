@@ -6,10 +6,10 @@
 
 .footer {
   margin: 0 var(--gutter);
-  padding: 28px 0 40px;
+  padding: 16px 0 20px;
   border-top: 1px solid var(--rule);
-  font-size: 12.5px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.6;
   color: var(--muted);
   text-align: center;
 }
