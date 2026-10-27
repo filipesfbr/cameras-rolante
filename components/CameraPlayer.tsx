@@ -7,6 +7,7 @@ const MAX_RECONNECT = 10; // tentativas falhas seguidas antes de marcar FORA DO 
 const STALL_MS = 8000; // "ao vivo" mas currentTime parado por tanto tempo = travado
 
 export type PlayerStatus = { text: string; ok: boolean };
+export const LIVE_TEXT = 'AO VIVO';
 
 /**
  * Reprodução HLS de uma câmera: reconexão com contagem regressiva, FORA DO AR e detecção de travamento.
@@ -30,7 +31,7 @@ export function useCameraPlayer(url: string) {
     const set = (text: string, ok: boolean) => setStatus({ text, ok });
     const markLive = () => {
       attempts = 0;
-      set('AO VIVO', true);
+      set(LIVE_TEXT, true);
     };
 
     /** registra uma falha; se estourar o máximo, marca FORA DO AR e para. Retorna true se desistiu */

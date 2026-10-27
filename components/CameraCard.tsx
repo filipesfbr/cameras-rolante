@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import type { Frame } from '@/lib/storage';
 import type { PublicCamera } from './CamerasApp';
-import { useCameraPlayer } from './CameraPlayer';
+import { LIVE_TEXT, useCameraPlayer } from './CameraPlayer';
 import HistoryStrip from './HistoryStrip';
 import s from './CameraCard.module.css';
 
@@ -49,6 +49,15 @@ export default function CameraCard({ cam, historyBatch, onOpenLive, onOpenFrame 
       <div className={s.media}>
         {/* o vídeo segue rodando por baixo: voltar ao vivo é instantâneo */}
         <video ref={videoRef} muted playsInline autoPlay onClick={onOpenLive} className={s.video} />
+        {/* enquanto não está ao vivo: cantos de enquadramento da marca e o status por cima do fundo vazio */}
+        {!frame && status.text !== LIVE_TEXT && (
+          <div className={s.waiting} aria-hidden="true">
+            <svg width="100%" height="100%" viewBox="0 0 160 90" preserveAspectRatio="none" fill="none" className={s.corners}>
+              <path d="M10 22 V10 H22 M138 10 H150 V22 M10 68 V80 H22 M138 80 H150 V68" stroke="var(--ink)" strokeWidth=".7" strokeLinecap="round" strokeLinejoin="round" opacity=".35" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <span>{status.text}</span>
+          </div>
+        )}
         {frame && <img src={frame.full} alt={`Print de ${title} em ${stampOf(frame)}`} className={s.frame} onClick={() => onOpenFrame(frame)} title="Clique para ampliar" />}
         {frame && (
           <div className={s.stamp}>
@@ -74,51 +83,54 @@ export default function CameraCard({ cam, historyBatch, onOpenLive, onOpenFrame 
 
       <div className={s.label}>
         <div className={s.name} title={title}>
-          <span className={s.nameText}>
-            {cam.location} — <strong>{cam.name}</strong>
-          </span>
-          {cam.sourceUrl && (
-            <a href={cam.sourceUrl} target="_blank" rel="noopener" className={s.src} title="Fonte: página da câmera" aria-label="Fonte: página da câmera (abre em nova aba)">
-              <Icon d={EXTERNAL} size={12} />
-            </a>
-          )}
+          <div className={s.river}>{cam.location}</div>
+          <div className={s.bridge}>
+            {cam.name}
+            {cam.sourceUrl && (
+              <a href={cam.sourceUrl} target="_blank" rel="noopener" className={s.src} title="Fonte: página da câmera" aria-label="Fonte: página da câmera (abre em nova aba)">
+                <Icon d={EXTERNAL} size={14} />
+              </a>
+            )}
+          </div>
         </div>
 
-        {/* com um print aberto o vídeo segue por baixo, então o status ao vivo enganaria; o horário já vai sobre a imagem */}
-        {!frame && (
-          <span className={`${s.badge} ${status.ok ? s.ok : s.bad}`}>
-            <span className={s.dot} />
-            {status.text}
-          </span>
-        )}
-
-        <div className={s.actions}>
-          {frame && (
-            <button className={`${s.iconBtn} ${s.iconActive} ${s.liveBtn}`} onClick={() => setFrame(null)} title="Voltar ao vivo" aria-label="Voltar ao vivo">
-              <Icon d={LIVE} />
-              Ao vivo
-            </button>
+        <div className={s.aside}>
+          {/* com um print aberto o vídeo segue por baixo, então o status ao vivo enganaria; o horário já vai sobre a imagem */}
+          {!frame && (
+            <span className={`${s.badge} ${status.ok ? s.ok : s.bad}`}>
+              <span className={s.dot} />
+              {status.text}
+            </span>
           )}
-          <button
-            className={s.iconBtn}
-            onClick={() => {
-              setFrame(null);
-              reload();
-            }}
-            title="Atualizar imagem"
-            aria-label="Atualizar imagem"
-          >
-            <Icon d={REFRESH} />
-          </button>
-          <button
-            className={`${s.iconBtn} ${historyOpen ? s.iconActive : ''}`}
-            onClick={() => setHistoryOpen((o) => !o)}
-            title={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
-            aria-label={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
-            aria-pressed={historyOpen}
-          >
-            <Icon d={HISTORY} />
-          </button>
+
+          <div className={s.actions}>
+            {frame && (
+              <button className={`${s.iconBtn} ${s.iconActive} ${s.liveBtn}`} onClick={() => setFrame(null)} title="Voltar ao vivo" aria-label="Voltar ao vivo">
+                <Icon d={LIVE} />
+                Ao vivo
+              </button>
+            )}
+            <button
+              className={s.iconBtn}
+              onClick={() => {
+                setFrame(null);
+                reload();
+              }}
+              title="Atualizar imagem"
+              aria-label="Atualizar imagem"
+            >
+              <Icon d={REFRESH} />
+            </button>
+            <button
+              className={`${s.iconBtn} ${historyOpen ? s.iconActive : ''}`}
+              onClick={() => setHistoryOpen((o) => !o)}
+              title={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
+              aria-label={historyOpen ? 'Ocultar histórico' : 'Mostrar histórico'}
+              aria-pressed={historyOpen}
+            >
+              <Icon d={HISTORY} />
+            </button>
+          </div>
         </div>
       </div>
 

@@ -17,6 +17,9 @@ export default function Clock() {
     return () => clearInterval(i);
   }, []);
   return (
-    <div className={s.time}>{text}</div>
+    <div className={s.time}>
+      <span className={s.dot} />
+      {text}
+    </div>
   );
 }

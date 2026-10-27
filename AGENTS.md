@@ -47,7 +47,7 @@ repo `filipesfbr/workflow-test`: leia o README dele antes de mexer no fluxo ou s
 
 - Código e comentários em português. Comentários `ponytail:` marcam simplificações deliberadas e o limite delas.
 - Arquivos em `lib/` importam com caminho relativo e extensão `.ts` (o teste roda com `--experimental-strip-types`: sem `enum`, sem alias `@/`). `app/` e `components/` usam `@/`.
-- CSS Modules com os tokens de `app/globals.css`; não introduzir biblioteca de UI.
+- CSS Modules com os tokens de `app/globals.css`; não introduzir biblioteca de UI. A identidade visual (família Rolante: Inter, um acento terracota, sem sombra nem gradiente) está especificada em `docs/brand/cameras-rolante/`.
 - Toda URL de câmera passa por `assertPublicUrl` (`lib/ssrf.ts`): só https e IP público.
 
 ## Cuidados
@@ -57,3 +57,13 @@ repo `filipesfbr/workflow-test`: leia o README dele antes de mexer no fluxo ou s
 - Push feito com `GITHUB_TOKEN` (bump, sync) não dispara workflow: o commit do bump não gera run de CI.
 - Render Free (Docker, Health Check Path `/api/health`): o serviço dorme após 15 min sem tráfego e a captura para junto. Um monitor de uptime (UptimeRobot) pinga o `/api/health` a cada 10 min ou menos; se ele sair do ar, os prints param.
 - Não guarde segredo no `config.json`: ele é legível pela URL pública do bucket.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

@@ -41,28 +41,38 @@ export default function CamerasApp({ cameras, historyBatch, notice }: { cameras:
   return (
     <>
       <header className={s.header}>
-        <div>
-          <h1 className={s.title}>Câmeras dos Rios - Rolante/RS</h1>
-          <div className={s.sub}>
-            Links das câmeras obtidos no portal{' '}
-            <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">
-              alerta.rolante.ifrs.edu.br
-            </a>
+        <div className={s.bar}>
+          <div className={s.brand}>
+            <svg width="26" height="34" viewBox="0 0 26 34" fill="none" aria-hidden="true">
+              <rect x="2" y="2" width="22" height="30" rx="11" fill="#fbf4e9" stroke="#26221d" strokeWidth="1.8" />
+              <path d="M7.5 13 V10.5 H10 M16 10.5 H18.5 V13 M7.5 21 V23.5 H10 M16 23.5 H18.5 V21" stroke="#26221d" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" opacity=".55" />
+              <circle cx="13" cy="17" r="1.9" fill="#b4622f" />
+            </svg>
+            <span>
+              Câmeras <span className={s.brandAccent}>Rolante</span>
+            </span>
+          </div>
+          <div className={s.right}>
+            <Clock />
+            {cameras.length > 0 && (
+              <button className={s.gridBtn} onClick={() => setGrid(true)} title="Ver todas as câmeras" aria-label="Ver todas as câmeras">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                  <rect x="3" y="3" width="8" height="8" />
+                  <rect x="13" y="3" width="8" height="8" />
+                  <rect x="3" y="13" width="8" height="8" />
+                  <rect x="13" y="13" width="8" height="8" />
+                </svg>
+              </button>
+            )}
           </div>
         </div>
-        <div className={s.right}>
-          {cameras.length > 0 && (
-            <button className={s.gridBtn} onClick={() => setGrid(true)} title="Ver todas as câmeras" aria-label="Ver todas as câmeras">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <rect x="3" y="3" width="8" height="8" />
-                <rect x="13" y="3" width="8" height="8" />
-                <rect x="3" y="13" width="8" height="8" />
-                <rect x="13" y="13" width="8" height="8" />
-              </svg>
-            </button>
-          )}
-          <Clock />
-        </div>
+        <h1 className={s.title}>Câmeras dos Rios - Rolante/RS</h1>
+        <p className={s.sub}>
+          Links das câmeras obtidos no portal{' '}
+          <a href="https://alerta.rolante.ifrs.edu.br/niveis-rios-arroios" target="_blank" rel="noopener">
+            alerta.rolante.ifrs.edu.br
+          </a>
+        </p>
       </header>
 
       {notice && (

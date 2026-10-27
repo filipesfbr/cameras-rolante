@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body{margin:0;background:#faf8f4;color:#26221d;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    ::selection{background:#f0d9c4}
+    a{color:#b4622f}
+    a:hover{color:#26221d}
+    @media (max-width:760px){.cr-pad{padding-left:20px!important;padding-right:20px!important}.cr-h1{font-size:31px!important}}
+  </style>
+</helmet>
+
+<div style="min-height:100vh;display:flex;flex-direction:column">
+
+  <header class="cr-pad" style="width:100%;max-width:1080px;margin:0 auto;padding:24px 56px;box-sizing:border-box;display:flex;align-items:center">
+    <div style="display:flex;align-items:center;gap:12px">
+      <svg width="26" height="34" viewBox="0 0 26 34" fill="none" aria-hidden="true"><rect x="2" y="2" width="22" height="30" rx="11" fill="#fbf4e9" stroke="#26221d" stroke-width="1.8"></rect><path d="M7.5 13 V10.5 H10 M16 10.5 H18.5 V13 M7.5 21 V23.5 H10 M16 23.5 H18.5 V21" stroke="#26221d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity=".55"></path><circle cx="13" cy="17" r="1.9" fill="#b4622f"></circle></svg>
+      <div style="font-size:20px;font-weight:600;letter-spacing:-.01em">cameras<span style="color:#b4622f">-rolante</span></div>
+    </div>
+  </header>
+
+  <main class="cr-pad" style="width:100%;max-width:1080px;margin:0 auto;padding:36px 56px 72px;box-sizing:border-box;flex:1">
+    <h1 class="cr-h1" style="font-size:44px;line-height:1.1;font-weight:700;letter-spacing:-.03em;margin:0 0 16px;text-wrap:balance">Câmeras dos Rios - Rolante/RS</h1>
+    <p style="font-size:16px;line-height:1.65;color:#5a534a;margin:0 0 24px;max-width:62ch">Links das câmeras obtidos no portal <a href="#">alerta.rolante.ifrs.edu.br</a></p>
+    <div style="display:inline-flex;align-items:center;gap:10px;border:1px solid #e4ddd1;border-radius:30px;padding:7px 14px;font-size:13px;font-weight:600;color:#5a534a;font-variant-numeric:tabular-nums;background:#fff">
+      <span style="width:7px;height:7px;border-radius:50%;background:#b4622f"></span>--/--/---- --:--:--
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:22px;margin-top:40px">
+
+      <article style="background:#fff;border:1px solid #ece7df;border-radius:14px;overflow:hidden">
+        <div style="position:relative;aspect-ratio:16/9;background:#f3ede2;display:flex;align-items:center;justify-content:center">
+          <svg width="100%" height="100%" viewBox="0 0 160 90" preserveAspectRatio="none" fill="none" style="position:absolute;inset:0" aria-hidden="true"><path d="M10 22 V10 H22 M138 10 H150 V22 M10 68 V80 H22 M138 80 H150 V68" stroke="#26221d" stroke-width=".7" stroke-linecap="round" stroke-linejoin="round" opacity=".35" vector-effect="non-scaling-stroke"></path></svg>
+          <span style="font-size:13px;color:#9a9082;position:relative">carregando…</span>
+        </div>
+        <div style="padding:18px 20px 20px;border-top:1px solid #f0ece4">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#9a9082;margin-bottom:6px">Rio Areia</div>
+          <div style="font-size:19px;font-weight:600;letter-spacing:-.015em;line-height:1.3">Ponte do Grassmann</div>
+          <a href="#" title="Fonte: página da câmera" style="display:inline-block;margin-top:12px;font-size:13.5px;font-weight:500;text-decoration:none">Fonte: página da câmera</a>
+        </div>
+      </article>
+
+      <article style="background:#fff;border:1px solid #ece7df;border-radius:14px;overflow:hidden">
+        <div style="position:relative;aspect-ratio:16/9;background:#f3ede2;display:flex;align-items:center;justify-content:center">
+          <svg width="100%" height="100%" viewBox="0 0 160 90" preserveAspectRatio="none" fill="none" style="position:absolute;inset:0" aria-hidden="true"><path d="M10 22 V10 H22 M138 10 H150 V22 M10 68 V80 H22 M138 80 H150 V68" stroke="#26221d" stroke-width=".7" stroke-linecap="round" stroke-linejoin="round" opacity=".35" vector-effect="non-scaling-stroke"></path></svg>
+          <span style="font-size:13px;color:#9a9082;position:relative">carregando…</span>
+        </div>
+        <div style="padding:18px 20px 20px;border-top:1px solid #f0ece4">
+          <div style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#9a9082;margin-bottom:6px">Rio Areia</div>
+          <div style="font-size:19px;font-weight:600;letter-spacing:-.015em;line-height:1.3">Ponte Mata Olho</div>
+          <a href="#" title="Fonte: página da câmera" style="display:inline-block;margin-top:12px;font-size:13.5px;font-weight:500;text-decoration:none">Fonte: página da câmera</a>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <footer class="cr-pad" style="width:100%;max-width:1080px;margin:0 auto;padding:28px 56px 40px;box-sizing:border-box;border-top:1px solid #ece7df">
+    <p style="margin:0;font-size:12.5px;line-height:1.7;color:#9a9082;max-width:78ch">As imagens são exibidas através do portal <a href="#">alerta.rolante.ifrs.edu.br</a> e das páginas de câmera em <a href="#">rolante.solutti.net</a>.<br>Este site não é responsável pelo conteúdo, disponibilidade ou propriedade das câmeras.<br>O horário dos prints é o de Brasília e pode diferir do relógio impresso na imagem da câmera.</p>
+  </footer>
+
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,7 +1,7 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.88);
+  background: rgba(38, 34, 29, 0.9); /* --ink com transparência */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,12 +18,12 @@
 .media {
   max-width: 100%;
   max-height: 88vh;
-  background: #000;
+  background: var(--ink);
   border-radius: 8px;
   display: block;
 }
 .title {
   font-size: 13px;
-  color: #ccc;
+  color: var(--rule-soft);
   text-align: center;
 }
