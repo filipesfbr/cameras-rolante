@@ -10,7 +10,7 @@ const title = 'Câmeras dos Rios - Rolante';
 const description = 'Câmeras de monitoramento dos rios de Rolante/RS, ao vivo e com histórico.';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cameras-rolante.onrender.com'), // og:image precisa de URL absoluta
+  metadataBase: new URL('https://cameras.rolanters.com.br'), // og:image precisa de URL absoluta
   title,
   description,
   openGraph: { title, description },
