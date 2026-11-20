@@ -1,6 +1,6 @@
 # Handoff: cameras-rolante
 
-Aplicar a identidade da família Rolante ao site **https://cameras-rolante.onrender.com/**. Só muda a camada visual. Nenhuma regra de negócio, busca de imagem, relógio ou link muda.
+Aplicar a identidade da família Rolante ao site **https://cameras.rolanters.com.br/** (domínio padrão `<nome>.rolanters.com.br`; o endereço antigo `cameras-rolante.onrender.com` foi o do handoff original). Só muda a camada visual. Nenhuma regra de negócio, busca de imagem, relógio ou link muda.
 
 ## 1. O que o site tem hoje
 
@@ -35,7 +35,7 @@ Escolhida: **visor** (cantos de enquadramento com ponto de foco em terracota). A
 | `mark.svg`, `mark-dark.svg`, `mark-mono-*.svg` | usos avulsos |
 | `lockup-horizontal-dark.svg`, `lockup-stacked.svg` | materiais externos |
 
-Os lockups usam `<text>` com Inter 600. Para o cabeçalho, prefira recriar a assinatura em HTML (símbolo SVG inline + texto), como no protótipo, para herdar a fonte do site. Para Open Graph, converta o texto em curvas ao gerar o PNG.
+Os lockups usam `<text>` com Inter 700. Para o cabeçalho, prefira recriar a assinatura em HTML (símbolo SVG inline + texto), como no protótipo, para herdar a fonte do site. Para Open Graph, converta o texto em curvas ao gerar o PNG.
 
 Regras: respiro ao redor da assinatura igual à largura do símbolo; mínimo de 16 px para o símbolo e 132 px para a assinatura; sem giro, distorção, sombra ou troca de fonte.
 
@@ -77,7 +77,7 @@ Estrutura: `min-height: 100vh; display: flex; flex-direction: column`; o `main` 
 | Região | Especificação |
 | --- | --- |
 | Contêiner | `max-width: 1080px`, centralizado, padding horizontal 56 px (20 px abaixo de 760 px) |
-| Cabeçalho | padding vertical 24 px, assinatura à esquerda (símbolo 26×34, gap 12, texto 20 px / 600 / -0.01em, `cameras` em tinta + `-rolante` em terracota) |
+| Cabeçalho | padding vertical 24 px, assinatura à esquerda (símbolo 26×34, gap 12, texto 20 px / 700 / -0.02em, `Câmeras` em tinta + `Rolante` em terracota) |
 | Título (h1) | 44 px / 700 / line-height 1.1 / -0.03em; 31 px abaixo de 760 px; `text-wrap: balance`. Margem inferior 16 px |
 | Linha de fonte | 16 px / 400 / 1.65, cor `body`, largura máx. 62ch, margem inferior 24 px. Link em terracota, hover em tinta |
 | Relógio | pílula `inline-flex`, gap 10, padding 7×14, borda 1 px `chip-border`, raio 30, fundo branco, 13 px / 600, `font-variant-numeric: tabular-nums`. Ponto terracota de 7 px antes do texto |
@@ -130,7 +130,7 @@ Não fazer: novas cores, sombras, ícones além do símbolo da marca, emojis, an
 
 O handoff foi desenhado sobre a versão estática do site, sem o vídeo ao vivo, o histórico, o mosaico e o admin. Ao aplicar no app atual, estas decisões mudaram ou completaram a especificação:
 
-- **Nome:** a assinatura é `Câmeras Rolante` (não `cameras-rolante`), com a mesma tipografia da assinatura do Impostômetro Rolante: 20 px / 700 / -0.02em. A imagem de Open Graph (`app/opengraph-image.png`) foi gerada a partir de `social-square-1200.svg` com esse nome.
+- **Nome:** a assinatura é «Câmeras Rolante» (não `cameras-rolante`; decisão do dono), com a mesma tipografia da assinatura do Impostômetro Rolante: 20 px / 700 / -0.02em. A imagem de Open Graph (`app/opengraph-image.png`) foi gerada a partir de `social-square-1200.svg` com esse nome.
 - **Cabeçalho:** o relógio fica à direita da assinatura, ao lado do botão do mosaico, a 15 px.
 - **Grade:** continua ocupando a largura toda da tela (1 a 3 câmeras lado a lado), sem o `max-width` de 1080 px, para o vídeo ficar o maior possível.
 - **Cartão:** os botões de atualizar, histórico e voltar ao vivo mantêm os ícones. O link da fonte é um ícone de link externo ao lado do nome da ponte, com o mesmo `title`.
@@ -139,3 +139,4 @@ O handoff foi desenhado sobre a versão estática do site, sem o vídeo ao vivo,
 - **Mosaico e vídeo ampliado:** fundo `ink`, porque são telas de vídeo.
 - **Admin e login:** usam os mesmos tokens.
 - **Favicon:** fica em `app/icon.svg` (convenção do Next), não em `public/favicon.svg`.
+- **Título da página:** `Câmeras dos Rios - Rolante` (`app/layout.tsx`, `<title>` e `og:title`) e o `h1` «Câmeras dos Rios - Rolante/RS» são só texto de página, não a assinatura. Exceção registrada: a marca continua «Câmeras Rolante».

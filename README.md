@@ -9,7 +9,7 @@
 
 **Câmeras ao vivo dos rios de Rolante/RS, com histórico de prints gravado 24 horas por dia.**
 
-[![Acessar o site](https://img.shields.io/badge/Acessar_o_site-cameras--rolante.onrender.com-b4622f?style=for-the-badge&labelColor=26221d)](https://cameras-rolante.onrender.com)
+[![Acessar o site](https://img.shields.io/badge/Acessar_o_site-cameras.rolanters.com.br-b4622f?style=for-the-badge&labelColor=26221d)](https://cameras.rolanters.com.br)
 
 [![CI](https://github.com/filipesfbr/cameras-rolante/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/filipesfbr/cameras-rolante/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)
